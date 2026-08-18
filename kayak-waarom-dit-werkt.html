@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kayak — Waarom dit werkt</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#132033;
+    --ink-soft:#3c4a5c;
+    --paper:#F1F3F0;
+    --card:#FFFFFF;
+    --line:#DBE0DA;
+    --amber:#DE9A3C;
+    --amber-soft:#F5E3C4;
+    --teal:#4F8C86;
+    --teal-soft:#DCEAE7;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{
+    max-width:760px;
+    margin:0 auto;
+    padding:56px 20px 90px;
+  }
+
+  /* ---- Hero ---- */
+  .eyebrow{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    color:var(--teal);
+    margin-bottom:14px;
+  }
+  h1{
+    font-family:'Fraunces',serif;
+    font-weight:500;
+    font-size:44px;
+    line-height:1.12;
+    letter-spacing:-0.015em;
+    margin:0 0 18px;
+  }
+  h1 em{font-style:italic;color:var(--teal);}
+  .lede{
+    font-size:17px;
+    line-height:1.6;
+    color:var(--ink-soft);
+    max-width:56ch;
+    margin:0 0 40px;
+  }
+
+  .funnel-strip{
+    display:flex;
+    gap:6px;
+    margin-bottom:64px;
+  }
+  .funnel-seg{
+    flex:1;
+    height:6px;
+    border-radius:3px;
+    background:var(--line);
+  }
+  .funnel-seg.a{background:var(--amber);}
+  .funnel-caption{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    color:var(--ink-soft);
+    margin-top:8px;
+    letter-spacing:.02em;
+  }
+
+  /* ---- Principle blocks ---- */
+  .principle{
+    display:grid;
+    grid-template-columns:56px 1fr;
+    gap:20px;
+    padding:34px 0;
+    border-top:1px solid var(--line);
+  }
+  .principle:last-of-type{border-bottom:1px solid var(--line);}
+  .num{
+    font-family:'JetBrains Mono',monospace;
+    font-size:13px;
+    color:var(--teal);
+    padding-top:4px;
+  }
+  .p-name{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    letter-spacing:.05em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    margin-bottom:8px;
+  }
+  .p-title{
+    font-family:'Fraunces',serif;
+    font-weight:500;
+    font-size:23px;
+    line-height:1.3;
+    margin:0 0 14px;
+    letter-spacing:-0.01em;
+  }
+  .p-body{
+    font-size:15px;
+    line-height:1.65;
+    color:var(--ink-soft);
+    margin:0 0 18px;
+    max-width:56ch;
+  }
+  .p-body strong{color:var(--ink);}
+
+  .in-demo{
+    background:var(--teal-soft);
+    border-radius:12px;
+    padding:14px 16px;
+    display:flex;
+    gap:12px;
+    align-items:flex-start;
+  }
+  .in-demo-label{
+    font-family:'JetBrains Mono',monospace;
+    font-size:10.5px;
+    letter-spacing:.04em;
+    text-transform:uppercase;
+    color:var(--teal);
+    white-space:nowrap;
+    padding-top:2px;
+  }
+  .in-demo-text{
+    font-size:13.5px;
+    line-height:1.55;
+    color:var(--ink);
+  }
+  .source{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    color:var(--ink-soft);
+    margin-top:12px;
+  }
+
+  /* ---- Closing panel ---- */
+  .closing{
+    margin-top:56px;
+    background:var(--ink);
+    color:#fff;
+    border-radius:20px;
+    padding:38px 30px;
+  }
+  .closing .eyebrow{color:var(--amber);}
+  .closing h2{
+    font-family:'Fraunces',serif;
+    font-style:italic;
+    font-weight:500;
+    font-size:24px;
+    line-height:1.4;
+    margin:0 0 16px;
+  }
+  .closing p{
+    font-size:14.5px;
+    line-height:1.7;
+    color:rgba(255,255,255,0.72);
+    margin:0;
+    max-width:56ch;
+  }
+
+  @media (max-width:520px){
+    h1{font-size:32px;}
+    .principle{grid-template-columns:1fr;}
+    .num{padding-top:0;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="eyebrow">Kayak intake mvp — toelichting</div>
+  <h1>Waarom dit <em>werkt</em></h1>
+  <p class="lede">Elke ontwerpkeuze in de intake-demo is terug te voeren op gedragswetenschap of selectiepsychologie. Geen gevoel — vijf onderliggende principes, en waar ze precies terugkomen.</p>
+
+  <div class="funnel-strip">
+    <div class="funnel-seg a"></div><div class="funnel-seg a"></div><div class="funnel-seg"></div><div class="funnel-seg"></div><div class="funnel-seg"></div>
+  </div>
+  <div class="funnel-caption">DEZE INTAKE = LAAG 1 VAN 5 IN DE CANDIDATE JOURNEY — BEWUST LICHT, ZIE PRINCIPE 5</div>
+
+  <!-- 1 -->
+  <div class="principle">
+    <div class="num">01</div>
+    <div>
+      <div class="p-name">Social Penetration Theory · Altman &amp; Taylor</div>
+      <p class="p-title">Vertrouwen bouwt zich laagsgewijs op — als het pellen van een ui</p>
+      <p class="p-body">Relaties, en dus ook vertrouwen, ontwikkelen zich via <strong>steeds diepere lagen van zelfonthulling</strong>. De eerste uitwisselingen zijn oppervlakkig; pas als die goed voelen, gaat het gesprek dieper. Vraag je meteen naar salaris of vertrekredenen, dan sla je lagen over — en dat voelt als een formulier, niet als kennismaking.</p>
+      <div class="in-demo">
+        <div class="in-demo-label">In de demo</div>
+        <div class="in-demo-text">De volgorde van de 6 vragen: binnen/buiten (oppervlakkig) → drijfveer en schaal (persoonlijker) → open ambitievraag (diepst). Nooit andersom.</div>
+      </div>
+      <div class="source">Altman &amp; Taylor, 1973 — Social Penetration Theory</div>
+    </div>
+  </div>
+
+  <!-- 2 -->
+  <div class="principle">
+    <div class="num">02</div>
+    <div>
+      <div class="p-name">Reciprocity in self-disclosure</div>
+      <p class="p-title">Vertrouwen groeit sneller als het gesprek beide kanten op gaat</p>
+      <p class="p-body">Onderzoek naar wederkerige zelfonthulling laat zien dat mensen sneller vertrouwen en sympathie opbouwen wanneer het delen <strong>over en weer gaat</strong> (turn-taking), in plaats van eenzijdig. Een intake die alleen vraagt en nooit iets teruggeeft, blijft voelen als een vragenlijst — ongeacht hoe leuk de vragen zelf zijn.</p>
+      <div class="in-demo">
+        <div class="in-demo-label">In de demo</div>
+        <div class="in-demo-text">Het "Kayak denkt mee"-scherm na elk antwoord — een korte, persoonlijke observatie vóór de volgende vraag. Dit is ook de natuurlijke plek voor een vleugje thought leadership, zonder dat het een artikel wordt.</div>
+      </div>
+      <div class="source">Sprecher et al., 2013 — Journal of Experimental Social Psychology</div>
+    </div>
+  </div>
+
+  <!-- 3 -->
+  <div class="principle">
+    <div class="num">03</div>
+    <div>
+      <div class="p-name">Foot-in-the-door · commitment &amp; consistency</div>
+      <p class="p-title">Elke beantwoorde vraag is een kleine "ja" die de grote ask makkelijker maakt</p>
+      <p class="p-body">Wie instemt met een klein, laagdrempelig verzoek, voelt daarna een innerlijke drang om <strong>consistent</strong> te blijven — en stemt eerder in met een groter verzoek later. Het eerste verzoek moet moeite kosten om het gevoel van commitment op te bouwen, maar laagdrempelig genoeg zijn om bijna iedereen mee te krijgen.</p>
+      <div class="in-demo">
+        <div class="in-demo-label">In de demo</div>
+        <div class="in-demo-text">Tikken op een tegel (geen dropdown of open tekstveld) voor de eerste vragen, plus de voortgangsroute bovenin — die maakt zichtbaar hoeveel kleine "ja's" al gegeven zijn vóór de uiteindelijke CTA.</div>
+      </div>
+      <div class="source">Freedman &amp; Fraser, 1966 — J. of Personality &amp; Social Psychology</div>
+    </div>
+  </div>
+
+  <!-- 4 -->
+  <div class="principle">
+    <div class="num">04</div>
+    <div>
+      <div class="p-name">Person-Job Fit · RIASEC-interesses</div>
+      <p class="p-title">De vraaginhoud zelf is geen bedenksel — het zijn gevalideerde voorspellers van aantrekkingskracht</p>
+      <p class="p-body">Uit een grote meta-analyse (172 studies, 836 effectgroottes) bleek <strong>gepercipieerde fit de sterkste unieke voorspeller van aantrekkingskracht op kandidaten</strong> — sterker dan bijvoorbeeld salaris. Vragen als binnen/buiten en klein team/groot bedrijf zijn geen speelse opvulling, maar een vereenvoudigde meting van precies dat.</p>
+      <div class="in-demo">
+        <div class="in-demo-label">In de demo</div>
+        <div class="in-demo-text">Vraag 1 t/m 4 mappen direct op RIASEC-interessetypes en person-environment fit — de tags op het eindscherm zijn een ruwe, eerste fit-indicatie.</div>
+      </div>
+      <div class="source">Kristof-Brown et al., 2005 — Personnel Psychology</div>
+    </div>
+  </div>
+
+  <!-- 5 -->
+  <div class="principle">
+    <div class="num">05</div>
+    <div>
+      <div class="p-name">Self-Determination Theory · Deci &amp; Ryan</div>
+      <p class="p-title">Dit meet motivatie, niet alleen voorkeur — en dat is precies waar het hoort</p>
+      <p class="p-body">Autonomie, competentie en verbondenheid zijn drie aparte basisbehoeften die samenhangen met <strong>duurzame motivatie en werktevredenheid</strong>. Ze zijn los van elkaar meetbaar — "vrijheid" en "een hecht team" zijn geen synoniemen, ook al voelen ze in een cv-gesprek vaak hetzelfde aan.</p>
+      <div class="in-demo">
+        <div class="in-demo-label">In de demo</div>
+        <div class="in-demo-text">Vraag 5 ("waar haal je nu energie uit") zet deze drie behoeften, plus impact, rechtstreeks tegenover elkaar als vier losse opties.</div>
+      </div>
+      <div class="source">Ryan &amp; Deci, 2000; meta-analyse Van den Broeck et al., 2016</div>
+    </div>
+  </div>
+
+  <div class="closing">
+    <div class="eyebrow">Belangrijk voor het teamgesprek</div>
+    <h2>"Dit is bewust een licht signaal — en dat is geen zwakte, het is het ontwerp."</h2>
+    <p>Zelfrapportage over interesses en drijfveren voorspelt vooral aantrekkingskracht en motivatie om te starten, niet toekomstig functioneren. Voor die laatste vraag zijn zwaardere instrumenten nodig — gestructureerd interview, assessment, werkproef — die pas later in de candidate journey volgen. Deze intake hoeft dus niet "compleet" te zijn om waardevol te zijn: het doel is vertrouwen winnen en de eerste stap laagdrempelig maken, niet in één keer het hele kandidaatprofiel vastleggen.</p>
+  </div>
+
+</div>
+</body>
+</html>

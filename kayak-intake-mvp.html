@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kayak — Intake MVP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#132033;
+    --ink-soft:#3c4a5c;
+    --paper:#F1F3F0;
+    --card:#FFFFFF;
+    --line:#DBE0DA;
+    --amber:#DE9A3C;
+    --amber-soft:#F5E3C4;
+    --teal:#4F8C86;
+    --teal-soft:#DCEAE7;
+    --radius:18px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    padding:32px 16px 60px;
+  }
+  .app{
+    width:100%;
+    max-width:480px;
+  }
+
+  /* ---- Header / route bar ---- */
+  .brand{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    margin-bottom:22px;
+  }
+  .brand-name{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:20px;
+    letter-spacing:-0.01em;
+  }
+  .brand-tag{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    color:var(--ink-soft);
+    background:var(--card);
+    border:1px solid var(--line);
+    padding:3px 8px;
+    border-radius:20px;
+  }
+
+  .route{
+    position:relative;
+    height:34px;
+    margin-bottom:28px;
+  }
+  .route-track{
+    position:absolute;
+    top:50%;
+    left:6px;
+    right:6px;
+    height:2px;
+    background:var(--line);
+    transform:translateY(-50%);
+  }
+  .route-fill{
+    position:absolute;
+    top:50%;
+    left:6px;
+    height:2px;
+    background:var(--teal);
+    transform:translateY(-50%);
+    width:0%;
+    transition:width .6s cubic-bezier(.65,0,.35,1);
+  }
+  .route-dots{
+    position:relative;
+    display:flex;
+    justify-content:space-between;
+  }
+  .route-dot{
+    width:12px;height:12px;border-radius:50%;
+    background:var(--card);
+    border:2px solid var(--line);
+    transition:all .4s ease;
+    z-index:1;
+  }
+  .route-dot.done{
+    background:var(--teal);
+    border-color:var(--teal);
+  }
+  .route-dot.current{
+    background:var(--amber);
+    border-color:var(--amber);
+    box-shadow:0 0 0 4px var(--amber-soft);
+  }
+
+  /* ---- Card ---- */
+  .card{
+    background:var(--card);
+    border-radius:var(--radius);
+    border:1px solid var(--line);
+    padding:28px 24px;
+    min-height:340px;
+    display:flex;
+    flex-direction:column;
+    box-shadow:0 1px 2px rgba(19,32,51,0.04);
+  }
+
+  .eyebrow{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    color:var(--teal);
+    margin-bottom:10px;
+  }
+
+  .question{
+    font-family:'Fraunces',serif;
+    font-weight:500;
+    font-size:26px;
+    line-height:1.28;
+    margin:0 0 22px;
+    letter-spacing:-0.01em;
+  }
+  .question em{
+    font-style:italic;
+    color:var(--teal);
+  }
+
+  .choices{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  .choice-row{
+    display:flex;
+    gap:10px;
+  }
+  .choice{
+    flex:1;
+    background:var(--paper);
+    border:1.5px solid var(--line);
+    border-radius:14px;
+    padding:16px 14px;
+    font-family:'Inter',sans-serif;
+    font-size:15px;
+    font-weight:600;
+    color:var(--ink);
+    cursor:pointer;
+    text-align:left;
+    transition:all .15s ease;
+    line-height:1.35;
+  }
+  .choice .sub{
+    display:block;
+    font-family:'Inter',sans-serif;
+    font-weight:400;
+    font-size:12.5px;
+    color:var(--ink-soft);
+    margin-top:3px;
+  }
+  .choice:hover{
+    border-color:var(--teal);
+    transform:translateY(-1px);
+  }
+  .choice.selected{
+    background:var(--teal-soft);
+    border-color:var(--teal);
+  }
+  .choice.grid{
+    flex:1 1 calc(50% - 5px);
+  }
+  .choice-grid{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+  }
+
+  .text-input{
+    width:100%;
+    border:1.5px solid var(--line);
+    background:var(--paper);
+    border-radius:14px;
+    padding:14px;
+    font-family:'Inter',sans-serif;
+    font-size:15px;
+    color:var(--ink);
+    resize:none;
+    min-height:78px;
+  }
+  .text-input:focus{outline:none;border-color:var(--teal);}
+
+  .sliders{
+    display:flex;
+    flex-direction:column;
+    gap:22px;
+  }
+  .slider-row{display:flex;flex-direction:column;gap:8px;}
+  .slider-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    gap:10px;
+  }
+  .slider-label{
+    font-size:14px;
+    font-weight:600;
+    color:var(--ink);
+    line-height:1.3;
+  }
+  .slider-tier{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    color:var(--teal);
+    white-space:nowrap;
+  }
+  input.slider{
+    -webkit-appearance:none;
+    appearance:none;
+    width:100%;
+    height:4px;
+    border-radius:2px;
+    background:var(--line);
+    outline:none;
+  }
+  input.slider::-webkit-slider-thumb{
+    -webkit-appearance:none;
+    appearance:none;
+    width:20px;height:20px;
+    border-radius:50%;
+    background:var(--teal);
+    border:3px solid #fff;
+    box-shadow:0 0 0 1px var(--teal);
+    cursor:pointer;
+  }
+  input.slider::-moz-range-thumb{
+    width:20px;height:20px;
+    border-radius:50%;
+    background:var(--teal);
+    border:3px solid #fff;
+    box-shadow:0 0 0 1px var(--teal);
+    cursor:pointer;
+  }
+
+  .card-footer{
+    margin-top:auto;
+    padding-top:22px;
+    display:flex;
+    justify-content:flex-end;
+  }
+  .btn{
+    font-family:'Inter',sans-serif;
+    font-weight:600;
+    font-size:14px;
+    border:none;
+    border-radius:30px;
+    padding:12px 22px;
+    cursor:pointer;
+    transition:all .15s ease;
+  }
+  .btn-primary{
+    background:var(--ink);
+    color:#fff;
+  }
+  .btn-primary:hover{background:#000;}
+  .btn-primary:disabled{
+    background:var(--line);
+    color:#9aa3ab;
+    cursor:not-allowed;
+  }
+  .btn-ghost{
+    background:transparent;
+    color:var(--ink-soft);
+    padding:12px 8px;
+  }
+
+  /* ---- Reciprocity insight ---- */
+  .insight{
+    display:none;
+    background:var(--ink);
+    color:#fff;
+    border-radius:var(--radius);
+    padding:24px;
+    min-height:340px;
+    flex-direction:column;
+    justify-content:center;
+  }
+  .insight.active{display:flex;}
+  .insight-label{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    color:var(--amber);
+    margin-bottom:14px;
+  }
+  .insight-text{
+    font-family:'Fraunces',serif;
+    font-style:italic;
+    font-weight:500;
+    font-size:22px;
+    line-height:1.4;
+    margin:0 0 24px;
+  }
+  .insight .btn-primary{background:var(--amber);color:var(--ink);}
+  .insight .btn-primary:hover{background:#e8ab52;}
+
+  /* ---- Final screen ---- */
+  .final{display:none;}
+  .final.active{display:block;}
+  .final-card{
+    background:var(--ink);
+    color:#fff;
+    border-radius:var(--radius);
+    padding:30px 24px;
+    text-align:center;
+  }
+  .final-label{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    color:var(--amber);
+    margin-bottom:8px;
+  }
+  .final-title{
+    font-family:'Fraunces',serif;
+    font-weight:500;
+    font-style:italic;
+    font-size:24px;
+    line-height:1.3;
+    margin:0 0 20px;
+  }
+  .tags{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    justify-content:center;
+    margin-bottom:26px;
+  }
+  .tag{
+    font-family:'Inter',sans-serif;
+    font-size:12.5px;
+    font-weight:600;
+    background:rgba(255,255,255,0.1);
+    border:1px solid rgba(255,255,255,0.18);
+    padding:6px 12px;
+    border-radius:20px;
+  }
+  .match-count{
+    font-family:'JetBrains Mono',monospace;
+    font-size:42px;
+    font-weight:600;
+    color:var(--amber);
+    line-height:1;
+    margin-bottom:6px;
+  }
+  .match-sub{
+    font-size:13px;
+    color:rgba(255,255,255,0.65);
+    margin-bottom:26px;
+  }
+  .final-actions{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  .btn-cta{
+    background:var(--amber);
+    color:var(--ink);
+    font-size:15px;
+    padding:15px;
+    width:100%;
+  }
+  .btn-cta:hover{background:#e8ab52;}
+  .btn-secondary{
+    background:transparent;
+    color:#fff;
+    border:1.5px solid rgba(255,255,255,0.3);
+    width:100%;
+  }
+
+  .why-link{
+    display:block;
+    margin-top:18px;
+    text-align:center;
+    font-family:'JetBrains Mono',monospace;
+    font-size:11.5px;
+    color:rgba(255,255,255,0.55);
+    text-decoration:none;
+    letter-spacing:.01em;
+  }
+  .why-link:hover{color:var(--amber);}
+
+  .preview-jobs{
+    margin-top:18px;
+    display:none;
+    flex-direction:column;
+    gap:8px;
+    text-align:left;
+  }
+  .preview-jobs.active{display:flex;}
+  .job-card{
+    background:var(--paper);
+    color:var(--ink);
+    border-radius:12px;
+    padding:12px 14px;
+  }
+  .job-title{font-weight:600;font-size:14px;margin-bottom:2px;}
+  .job-meta{font-size:12px;color:var(--ink-soft);font-family:'JetBrains Mono',monospace;}
+  .job-badge{
+    font-family:'JetBrains Mono',monospace;
+    font-size:10.5px;
+    letter-spacing:.03em;
+    text-transform:uppercase;
+    color:var(--amber);
+    margin-bottom:4px;
+  }
+
+  .demo-note{
+    margin-top:18px;
+    font-size:11.5px;
+    color:var(--ink-soft);
+    text-align:center;
+    line-height:1.5;
+  }
+
+  @media (max-width:380px){
+    .question{font-size:22px;}
+    .match-count{font-size:36px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <div class="brand">
+    <div class="brand-name">kayak</div>
+    <div class="brand-tag">intake · concept</div>
+  </div>
+
+  <div class="route">
+    <div class="route-track"></div>
+    <div class="route-fill" id="routeFill"></div>
+    <div class="route-dots" id="routeDots"></div>
+  </div>
+
+  <div id="stage"></div>
+
+  <div class="demo-note">Demo met voorbeelddata — nog niet gekoppeld aan de 190k-vacaturedatabase.</div>
+
+</div>
+
+<script>
+// ---------------------------------------------------------
+// CONTENT MODEL — swap/extend questions here
+// ---------------------------------------------------------
+const questions = [
+  {
+    key: "omgeving",
+    eyebrow: "Vraag 1 van 6",
+    question: "Kantoor met uitzicht op een scherm, of <em>laarzen aan</em> en naar buiten?",
+    type: "choice",
+    options: [
+      { id: "binnen", label: "Binnen", sub: "Structuur, focus, een vaste plek" },
+      { id: "buiten", label: "Buiten", sub: "Beweging, wisselende omgeving" }
+    ],
+    optionsExtra: [
+      { id: "beide", label: "Maakt niet uit", sub: "Ligt meer aan de rol zelf dan aan de plek" }
+    ],
+    insight: {
+      binnen: "Duidelijk — jij bouwt liever iets op, dan dat je het uit de wind houdt.",
+      buiten: "Noted. Vier muren zijn voor jou eerder een kooi dan comfort.",
+      beide: "Ook goed om te weten — dan laat je de omgeving liever aan de rol over dan andersom."
+    }
+  },
+  {
+    key: "drijfveer",
+    eyebrow: "Vraag 2 van 6",
+    question: "Je werkt het liefst voor <em>een idee</em> waar je in gelooft, of voor <em>een resultaat</em> dat telbaar is?",
+    type: "choice",
+    options: [
+      { id: "idealistisch", label: "Een idee", sub: "Missie, betekenis, impact" },
+      { id: "commercieel", label: "Een resultaat", sub: "Targets, groei, tastbaar succes" }
+    ],
+    insight: {
+      idealistisch: "Interessant — jij wilt 's avonds weten waaróm je iets deed, niet alleen wat.",
+      commercieel: "Helder. Jij houdt van een scorebord — vooruitgang moet zichtbaar zijn."
+    }
+  },
+  {
+    key: "schaal",
+    eyebrow: "Vraag 3 van 6",
+    question: "Een team waarin je <em>iedereen bij naam</em> kent, of een organisatie met een <em>duidelijk pad naar boven</em>?",
+    type: "choice",
+    options: [
+      { id: "klein", label: "Klein team", sub: "Korte lijnen, direct contact" },
+      { id: "groot", label: "Groot bedrijf", sub: "Structuur, groeimogelijkheden" }
+    ],
+    insight: {
+      klein: "Dat verklaart veel — jij wilt impact vóelen, niet alleen zien op een organogram.",
+      groot: "Logisch. Jij denkt liever in een loopbaan dan in een losse baan."
+    }
+  },
+  {
+    key: "sector",
+    eyebrow: "Vraag 4 van 6",
+    question: "Welke wereld trekt je het meest?",
+    type: "grid",
+    options: [
+      { id: "zorg", label: "Zorg & welzijn" },
+      { id: "energie", label: "Energie & duurzaamheid" },
+      { id: "techniek", label: "Techniek & industrie" },
+      { id: "bouw", label: "Bouw & infra" },
+      { id: "commercieel", label: "Sales & commercie" },
+      { id: "overig", label: "Nog geen idee" }
+    ],
+    insight: {
+      zorg: "Zorg trekt mensen die verantwoordelijkheid niet spannend vinden, maar vanzelfsprekend.",
+      energie: "De energiesector heeft nu meer vacatures dan mensen — jouw timing is toevallig goed.",
+      techniek: "Techniek beloont mensen die liever begrijpen hóe iets werkt dan wát het doet.",
+      bouw: "Bouw en infra draaien op mensen die aan het eind van de dag iets kunnen aanwijzen.",
+      commercieel: "Sales is een van de weinige vakken waar je resultaat dagelijks zwart-op-wit ziet.",
+      overig: "Eerlijk antwoord — en precies waar een goed gesprek met een recruiter voor is."
+    }
+  },
+  {
+    key: "energiebron",
+    eyebrow: "Vraag 5 van 6",
+    question: "Waar haal jij nu energie uit? <em>Meerdere antwoorden mogen hoog staan.</em>",
+    type: "sliders",
+    options: [
+      { id: "autonomie", label: "Vrijheid om het op mijn manier te doen" },
+      { id: "meesterschap", label: "Merkbaar beter worden in mijn vak" },
+      { id: "verbondenheid", label: "Een hecht team om me heen" },
+      { id: "impact", label: "Meer verantwoordelijkheid en invloed" }
+    ],
+    insight: {
+      autonomie: "Voor jou is een goede baan er een waarin niemand over je schouder meekijkt.",
+      meesterschap: "Jij wordt niet moe van moeilijk — daar begint het juist interessant.",
+      verbondenheid: "Voor jou staat of valt een baan met de mensen ernaast, niet ernboven.",
+      impact: "Jij wilt niet alleen meedoen — je wilt dat je aanwezigheid uitmaakt.",
+      balanced: "Best evenwichtig — geen enkele drijfveer springt er sterk uit. Dat vertaalt zich later in een breder scala aan passende rollen."
+    }
+  },
+  {
+    key: "ambitie",
+    eyebrow: "Vraag 6 van 6",
+    question: "Over 3 jaar ben je trots omdat…",
+    type: "text",
+    placeholder: "Maak de zin af — één regel is genoeg",
+    skipOption: { id: "geen_idee", label: "Daar ben ik niet zo mee bezig" },
+    insight: {
+      default: "Bewaard. Dit is precies het soort antwoord dat een CV nooit laat zien.",
+      geen_idee: "Ook prima — niet iedereen denkt in horizons van 3 jaar, en dat zegt op zich ook iets."
+    }
+  }
+];
+
+const state = { answers: {}, step: 0, showingInsight: false };
+const stage = document.getElementById('stage');
+const routeDots = document.getElementById('routeDots');
+const routeFill = document.getElementById('routeFill');
+
+function buildRoute(){
+  routeDots.innerHTML = '';
+  questions.forEach((q,i)=>{
+    const d = document.createElement('div');
+    d.className = 'route-dot';
+    d.id = 'dot'+i;
+    routeDots.appendChild(d);
+  });
+  updateRoute();
+}
+function updateRoute(){
+  questions.forEach((q,i)=>{
+    const d = document.getElementById('dot'+i);
+    d.classList.remove('done','current');
+    if(i < state.step) d.classList.add('done');
+    else if(i === state.step) d.classList.add('current');
+  });
+  const pct = questions.length <= 1 ? 0 : (state.step/(questions.length-1))*100;
+  routeFill.style.width = Math.min(pct,100)+'%';
+}
+
+function render(){
+  if(state.step >= questions.length){
+    renderFinal();
+    return;
+  }
+  updateRoute();
+  const q = questions[state.step];
+
+  if(state.showingInsight){
+    renderInsight(q);
+    return;
+  }
+
+  let optsHtml = '';
+  if(q.type === 'choice'){
+    optsHtml = `<div class="choice-row">` + q.options.map(o=>
+      `<button class="choice" data-id="${o.id}" onclick="selectOption('${o.id}')">
+        ${o.label}<span class="sub">${o.sub}</span>
+      </button>`).join('') + `</div>`;
+    if(q.optionsExtra && q.optionsExtra.length){
+      optsHtml += `<div class="choices" style="margin-top:10px;">` + q.optionsExtra.map(o=>
+        `<button class="choice" data-id="${o.id}" onclick="selectOption('${o.id}')">
+          ${o.label}<span class="sub">${o.sub}</span>
+        </button>`).join('') + `</div>`;
+    }
+  } else if(q.type === 'choice-col'){
+    optsHtml = `<div class="choices">` + q.options.map(o=>
+      `<button class="choice" data-id="${o.id}" onclick="selectOption('${o.id}')">
+        ${o.label}
+      </button>`).join('') + `</div>`;
+  } else if(q.type === 'grid'){
+    optsHtml = `<div class="choice-grid">` + q.options.map(o=>
+      `<button class="choice grid" data-id="${o.id}" onclick="selectOption('${o.id}')">
+        ${o.label}
+      </button>`).join('') + `</div>`;
+  } else if(q.type === 'text'){
+    optsHtml = `<textarea class="text-input" id="textAnswer" placeholder="${q.placeholder}"></textarea>
+      <div class="card-footer" style="justify-content:space-between;">
+        ${q.skipOption ? `<button class="btn btn-ghost" onclick="selectOption('${q.skipOption.id}')">${q.skipOption.label}</button>` : `<span></span>`}
+        <button class="btn btn-primary" id="textNext" onclick="submitText()">Verder</button>
+      </div>`;
+  } else if(q.type === 'sliders'){
+    optsHtml = `<div class="sliders">` + q.options.map(o=>
+      `<div class="slider-row">
+        <div class="slider-top">
+          <div class="slider-label">${o.label}</div>
+          <div class="slider-tier" id="tier-${o.id}">Gemiddeld</div>
+        </div>
+        <input type="range" min="0" max="100" value="50" class="slider" id="slider-${o.id}" oninput="updateSliderTier('${o.id}')">
+      </div>`).join('') + `</div>
+      <div class="card-footer">
+        <button class="btn btn-primary" onclick="submitSliders()">Verder</button>
+      </div>`;
+  }
+
+  stage.innerHTML = `
+    <div class="card">
+      <div class="eyebrow">${q.eyebrow}</div>
+      <h2 class="question">${q.question}</h2>
+      ${optsHtml}
+    </div>
+  `;
+}
+
+function selectOption(id){
+  const q = questions[state.step];
+  state.answers[q.key] = id;
+  state.showingInsight = true;
+  render();
+}
+
+function tierLabel(v){
+  if(v < 25) return "Nauwelijks";
+  if(v < 50) return "Een beetje";
+  if(v < 75) return "Belangrijk";
+  return "Heel belangrijk";
+}
+function updateSliderTier(id){
+  const v = parseInt(document.getElementById('slider-'+id).value, 10);
+  document.getElementById('tier-'+id).textContent = tierLabel(v);
+}
+function submitSliders(){
+  const q = questions[state.step];
+  const vals = {};
+  q.options.forEach(o=>{
+    vals[o.id] = parseInt(document.getElementById('slider-'+o.id).value, 10);
+  });
+  state.answers[q.key] = vals;
+  state.showingInsight = true;
+  render();
+}
+
+function submitText(){
+  const val = document.getElementById('textAnswer').value.trim();
+  const q = questions[state.step];
+  state.answers[q.key] = val || '—';
+  state.showingInsight = true;
+  render();
+}
+
+function renderInsight(q){
+  const ans = state.answers[q.key];
+  const text = getInsightText(q, ans);
+  stage.innerHTML = `
+    <div class="insight active">
+      <div class="insight-label">Kayak denkt mee</div>
+      <p class="insight-text">"${text}"</p>
+      <div class="card-footer" style="justify-content:flex-start;padding-top:0;">
+        <button class="btn btn-primary" onclick="advance()">Volgende vraag →</button>
+      </div>
+    </div>
+  `;
+}
+
+function getInsightText(q, ans){
+  if(ans && typeof ans === 'object'){
+    const sorted = Object.entries(ans).sort((a,b)=>b[1]-a[1]);
+    const [topKey, topVal] = sorted[0];
+    const second = sorted[1];
+    const flat = (topVal - (sorted[sorted.length-1][1])) <= 15;
+    if(flat) return q.insight.balanced || "Genoteerd.";
+    return q.insight[topKey] || q.insight.default || "Genoteerd.";
+  }
+  return (q.insight[ans] || q.insight.default || "Genoteerd.");
+}
+
+function advance(){
+  state.step += 1;
+  state.showingInsight = false;
+  render();
+}
+
+function profileTags(){
+  const a = state.answers;
+  const map = {
+    binnen:"Binnendienst", buiten:"Buitendienst", beide:"Flexibel qua omgeving",
+    idealistisch:"Missiegedreven", commercieel:"Resultaatgericht",
+    klein:"Teamspeler", groot:"Groeigericht",
+    zorg:"Zorg & welzijn", energie:"Energie & duurzaamheid", techniek:"Techniek", bouw:"Bouw & infra", overig:"Open profiel",
+    autonomie:"Zelfstandig", meesterschap:"Vakgericht", verbondenheid:"Teamgericht", impact:"Ambitieus"
+  };
+  const tags = [];
+  Object.values(a).forEach(v=>{
+    if(v && typeof v === 'object'){
+      Object.entries(v)
+        .sort((x,y)=>y[1]-x[1])
+        .slice(0,2)
+        .forEach(([k,val])=>{ if(val >= 55 && map[k]) tags.push(map[k]); });
+    } else if(map[v]){
+      tags.push(map[v]);
+    }
+  });
+  return tags.slice(0,5);
+}
+
+const jobPool = [
+  { title:"Servicetechnicus Energietransitie", meta:"Amsterdam · 32-40u · Vast" },
+  { title:"Zorgondersteuner Wijkteam", meta:"Hoofddorp · 24-36u · Detachering" },
+  { title:"Projectcoördinator Duurzame Bouw", meta:"Utrecht · 40u · Vast" },
+  { title:"Buitendienstmedewerker Netbeheer", meta:"Haarlem · 36u · Detachering" },
+  { title:"Accountmanager Technische Dienst", meta:"Maarssen · 40u · Vast" }
+];
+
+function renderFinal(){
+  updateRoute();
+  const tags = profileTags();
+  const count = 190000 - Math.floor(Math.random()*4000) - 185500; // demo shrink to a plausible small number
+  stage.innerHTML = `
+    <div class="final active">
+      <div class="final-card">
+        <div class="final-label">Jouw eerste profiel</div>
+        <p class="final-title">"${tags[0] || 'Onderweg'} met oog voor ${ (tags[2]||tags[1]||'de juiste plek').toLowerCase() }."</p>
+        <div class="tags">${tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+        <div class="match-count" id="matchCount">0</div>
+        <div class="match-sub">van de 190.000 vacatures in onze database passen mogelijk bij jou</div>
+        <div class="final-actions">
+          <button class="btn btn-cta" onclick="alert('Demo — koppelt in productie aan recruiter-intake in het ATS.')">Praat met een recruiter</button>
+          <button class="btn btn-secondary" onclick="showJobs('intake')">Bekijk 3 voorbeeldfuncties</button>
+          <button class="btn btn-secondary" onclick="showJobs('linkedin')">Vacatures o.b.v. LinkedIn + intake</button>
+        </div>
+        <div class="preview-jobs" id="previewJobs"></div>
+        <a class="why-link" href="kayak-waarom-dit-werkt.html" target="_blank" rel="noopener">Waarom dit werkt — de psychologie erachter →</a>
+      </div>
+    </div>
+  `;
+  animateCount(Math.max(count,140));
+}
+
+function animateCount(target){
+  const el = document.getElementById('matchCount');
+  let cur = 0;
+  const step = Math.max(1, Math.floor(target/40));
+  const t = setInterval(()=>{
+    cur += step;
+    if(cur >= target){ cur = target; clearInterval(t); }
+    el.textContent = cur.toLocaleString('nl-NL');
+  }, 25);
+}
+
+function showJobs(source){
+  const box = document.getElementById('previewJobs');
+  const isLinkedin = source === 'linkedin';
+
+  if(isLinkedin){
+    alert('Demo — koppelt in productie aan de LinkedIn-API en verrijkt het profiel met je online werkervaring, bovenop de intake-antwoorden.');
+  }
+
+  const jobs = isLinkedin ? jobPool : jobPool.slice(0,3);
+  const badge = isLinkedin
+    ? `<div class="job-badge">Verrijkt met LinkedIn-profiel + intake-antwoorden (demo)</div>`
+    : `<div class="job-badge">Op basis van je intake-antwoorden</div>`;
+
+  box.innerHTML = badge + jobs.map(j=>`
+    <div class="job-card">
+      <div class="job-title">${j.title}</div>
+      <div class="job-meta">${j.meta}</div>
+    </div>`).join('');
+  box.classList.add('active');
+}
+
+buildRoute();
+render();
+</script>
+
+</body>
+</html>
