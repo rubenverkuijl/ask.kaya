@@ -126,6 +126,74 @@
     margin-bottom:10px;
   }
 
+  .back-link{
+    background:none;
+    border:none;
+    padding:0;
+    margin-bottom:16px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:11.5px;
+    color:var(--ink-soft);
+    cursor:pointer;
+    display:inline-block;
+  }
+  .back-link:hover{color:var(--teal);}
+
+  .start-card{justify-content:center;}
+  .start-card .question{font-size:24px;}
+  .start-card .card-footer{padding-top:26px;justify-content:flex-start;}
+
+  .field-block{margin-bottom:20px;}
+  .field-label{
+    display:block;
+    font-size:14px;
+    font-weight:600;
+    color:var(--ink);
+    margin-bottom:8px;
+  }
+  .optional-tag{
+    font-family:'JetBrains Mono',monospace;
+    font-size:10.5px;
+    font-weight:500;
+    color:var(--ink-soft);
+    text-transform:none;
+    letter-spacing:0;
+  }
+  .field-row{
+    display:flex;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:8px;
+    font-size:14.5px;
+    font-weight:600;
+    color:var(--ink);
+  }
+  .inline-input{
+    border:1.5px solid var(--line);
+    background:var(--paper);
+    border-radius:10px;
+    padding:9px 10px;
+    font-family:'Inter',sans-serif;
+    font-size:14.5px;
+    font-weight:600;
+    color:var(--ink);
+    min-width:0;
+  }
+  .inline-input.small{width:64px;text-align:center;}
+  .inline-input:not(.small){flex:1;min-width:120px;}
+  .inline-input:focus{outline:none;border-color:var(--teal);}
+  .text-input-line{
+    width:100%;
+    border:1.5px solid var(--line);
+    background:var(--paper);
+    border-radius:10px;
+    padding:12px;
+    font-family:'Inter',sans-serif;
+    font-size:14.5px;
+    color:var(--ink);
+  }
+  .text-input-line:focus{outline:none;border-color:var(--teal);}
+
   .question{
     font-family:'Fraunces',serif;
     font-weight:500;
@@ -471,7 +539,7 @@
 const questions = [
   {
     key: "omgeving",
-    eyebrow: "Vraag 1 van 6",
+    eyebrow: "Vraag 1 van 7",
     question: "Kantoor met uitzicht op een scherm, of <em>laarzen aan</em> en naar buiten?",
     type: "choice",
     options: [
@@ -489,7 +557,7 @@ const questions = [
   },
   {
     key: "drijfveer",
-    eyebrow: "Vraag 2 van 6",
+    eyebrow: "Vraag 2 van 7",
     question: "Je werkt het liefst voor <em>een idee</em> waar je in gelooft, of voor <em>een resultaat</em> dat telbaar is?",
     type: "choice",
     options: [
@@ -503,7 +571,7 @@ const questions = [
   },
   {
     key: "schaal",
-    eyebrow: "Vraag 3 van 6",
+    eyebrow: "Vraag 3 van 7",
     question: "Een team waarin je <em>iedereen bij naam</em> kent, of een organisatie met een <em>duidelijk pad naar boven</em>?",
     type: "choice",
     options: [
@@ -517,7 +585,7 @@ const questions = [
   },
   {
     key: "sector",
-    eyebrow: "Vraag 4 van 6",
+    eyebrow: "Vraag 4 van 7",
     question: "Welke wereld trekt je het meest?",
     type: "grid",
     options: [
@@ -539,7 +607,7 @@ const questions = [
   },
   {
     key: "energiebron",
-    eyebrow: "Vraag 5 van 6",
+    eyebrow: "Vraag 5 van 7",
     question: "Waar haal jij nu energie uit? <em>Meerdere antwoorden mogen hoog staan.</em>",
     type: "sliders",
     options: [
@@ -550,7 +618,7 @@ const questions = [
     ],
     insight: {
       autonomie: "Voor jou is een goede baan er een waarin niemand over je schouder meekijkt.",
-      meesterschap: "Jij wordt niet moe van moeilijk — daar begint het juist interessant.",
+      meesterschap: "Voor jou begint het pas echt interessant te worden zodra het moeilijk wordt.",
       verbondenheid: "Voor jou staat of valt een baan met de mensen ernaast, niet ernboven.",
       impact: "Jij wilt niet alleen meedoen — je wilt dat je aanwezigheid uitmaakt.",
       balanced: "Best evenwichtig — geen enkele drijfveer springt er sterk uit. Dat vertaalt zich later in een breder scala aan passende rollen."
@@ -558,22 +626,64 @@ const questions = [
   },
   {
     key: "ambitie",
-    eyebrow: "Vraag 6 van 6",
+    eyebrow: "Vraag 6 van 7",
     question: "Over 3 jaar ben je trots omdat…",
     type: "text",
     placeholder: "Maak de zin af — één regel is genoeg",
     skipOption: { id: "geen_idee", label: "Daar ben ik niet zo mee bezig" },
     insight: {
-      default: "Bewaard. Dit is precies het soort antwoord dat een CV nooit laat zien.",
-      geen_idee: "Ook prima — niet iedereen denkt in horizons van 3 jaar, en dat zegt op zich ook iets."
+      default: "Perfect, daar houden we van.",
+      geen_idee: "Perfect, daar houden we van."
+    }
+  },
+  {
+    key: "praktisch",
+    eyebrow: "Vraag 7 van 7",
+    question: "Nog een paar praktische dingen, dan zijn we klaar.",
+    type: "practical",
+    insight: {
+      default: "Dankjewel — dit gebruiken we direct om de matches scherper te maken."
     }
   }
 ];
 
-const state = { answers: {}, step: 0, showingInsight: false };
+const state = { answers: {}, step: 0, showingInsight: false, started: false };
 const stage = document.getElementById('stage');
 const routeDots = document.getElementById('routeDots');
 const routeFill = document.getElementById('routeFill');
+
+function renderStart(){
+  routeFill.style.width = '0%';
+  questions.forEach((q,i)=>{
+    const d = document.getElementById('dot'+i);
+    if(d) d.classList.remove('done','current');
+  });
+  stage.innerHTML = `
+    <div class="card start-card">
+      <div class="eyebrow">Kayak intake</div>
+      <h2 class="question">Benieuwd naar welke functies bij je passen? Beantwoord enkele vragen en binnen drie minuten heb je inspiratie voor een frisse start in je carrière!</h2>
+      <div class="card-footer">
+        <button class="btn btn-primary" onclick="startFlow()">Start →</button>
+      </div>
+    </div>
+  `;
+}
+
+function startFlow(){
+  state.started = true;
+  render();
+}
+
+function goBack(){
+  if(state.step === 0){
+    state.started = false;
+    render();
+    return;
+  }
+  state.step -= 1;
+  state.showingInsight = false;
+  render();
+}
 
 function buildRoute(){
   routeDots.innerHTML = '';
@@ -597,6 +707,10 @@ function updateRoute(){
 }
 
 function render(){
+  if(!state.started){
+    renderStart();
+    return;
+  }
   if(state.step >= questions.length){
     renderFinal();
     return;
@@ -610,49 +724,76 @@ function render(){
   }
 
   let optsHtml = '';
+  const prevAns = state.answers[q.key];
   if(q.type === 'choice'){
     optsHtml = `<div class="choice-row">` + q.options.map(o=>
-      `<button class="choice" data-id="${o.id}" onclick="selectOption('${o.id}')">
+      `<button class="choice${prevAns===o.id ? ' selected':''}" data-id="${o.id}" onclick="selectOption('${o.id}')">
         ${o.label}<span class="sub">${o.sub}</span>
       </button>`).join('') + `</div>`;
     if(q.optionsExtra && q.optionsExtra.length){
       optsHtml += `<div class="choices" style="margin-top:10px;">` + q.optionsExtra.map(o=>
-        `<button class="choice" data-id="${o.id}" onclick="selectOption('${o.id}')">
+        `<button class="choice${prevAns===o.id ? ' selected':''}" data-id="${o.id}" onclick="selectOption('${o.id}')">
           ${o.label}<span class="sub">${o.sub}</span>
         </button>`).join('') + `</div>`;
     }
   } else if(q.type === 'choice-col'){
     optsHtml = `<div class="choices">` + q.options.map(o=>
-      `<button class="choice" data-id="${o.id}" onclick="selectOption('${o.id}')">
+      `<button class="choice${prevAns===o.id ? ' selected':''}" data-id="${o.id}" onclick="selectOption('${o.id}')">
         ${o.label}
       </button>`).join('') + `</div>`;
   } else if(q.type === 'grid'){
     optsHtml = `<div class="choice-grid">` + q.options.map(o=>
-      `<button class="choice grid" data-id="${o.id}" onclick="selectOption('${o.id}')">
+      `<button class="choice grid${prevAns===o.id ? ' selected':''}" data-id="${o.id}" onclick="selectOption('${o.id}')">
         ${o.label}
       </button>`).join('') + `</div>`;
   } else if(q.type === 'text'){
-    optsHtml = `<textarea class="text-input" id="textAnswer" placeholder="${q.placeholder}"></textarea>
+    const prefill = (prevAns && prevAns !== q.skipOption?.id) ? prevAns : '';
+    optsHtml = `<textarea class="text-input" id="textAnswer" placeholder="${q.placeholder}">${prefill}</textarea>
       <div class="card-footer" style="justify-content:space-between;">
         ${q.skipOption ? `<button class="btn btn-ghost" onclick="selectOption('${q.skipOption.id}')">${q.skipOption.label}</button>` : `<span></span>`}
         <button class="btn btn-primary" id="textNext" onclick="submitText()">Verder</button>
       </div>`;
   } else if(q.type === 'sliders'){
-    optsHtml = `<div class="sliders">` + q.options.map(o=>
-      `<div class="slider-row">
+    optsHtml = `<div class="sliders">` + q.options.map(o=>{
+      const v = (prevAns && prevAns[o.id] !== undefined) ? prevAns[o.id] : 50;
+      return `<div class="slider-row">
         <div class="slider-top">
           <div class="slider-label">${o.label}</div>
-          <div class="slider-tier" id="tier-${o.id}">Gemiddeld</div>
+          <div class="slider-tier" id="tier-${o.id}">${tierLabel(v)}</div>
         </div>
-        <input type="range" min="0" max="100" value="50" class="slider" id="slider-${o.id}" oninput="updateSliderTier('${o.id}')">
-      </div>`).join('') + `</div>
+        <input type="range" min="0" max="100" value="${v}" class="slider" id="slider-${o.id}" oninput="updateSliderTier('${o.id}')">
+      </div>`;
+    }).join('') + `</div>
       <div class="card-footer">
         <button class="btn btn-primary" onclick="submitSliders()">Verder</button>
+      </div>`;
+  } else if(q.type === 'practical'){
+    const pa = prevAns || {};
+    optsHtml = `
+      <div class="field-block">
+        <div class="field-row">
+          <span>Ik wil werken circa</span>
+          <input type="number" min="0" class="inline-input small" id="field-km" placeholder="20" value="${pa.km || ''}">
+          <span>km vanaf</span>
+          <input type="text" class="inline-input" id="field-plaats" placeholder="bijv. Utrecht" value="${pa.plaats || ''}">
+        </div>
+      </div>
+      <div class="field-block">
+        <label class="field-label">Mijn gewenste salaris</label>
+        <input type="text" class="text-input-line" id="field-salaris" placeholder="bijv. €3.200 per maand" value="${pa.salaris || ''}">
+      </div>
+      <div class="field-block">
+        <label class="field-label">Ik wil niet werken als… <span class="optional-tag">niet verplicht</span></label>
+        <input type="text" class="text-input-line" id="field-exclusie" placeholder="bijv. callcentermedewerker" value="${pa.exclusie || ''}">
+      </div>
+      <div class="card-footer">
+        <button class="btn btn-primary" onclick="submitPractical()">Bekijk mijn profiel →</button>
       </div>`;
   }
 
   stage.innerHTML = `
     <div class="card">
+      <button class="back-link" onclick="goBack()">← Vorige vraag</button>
       <div class="eyebrow">${q.eyebrow}</div>
       <h2 class="question">${q.question}</h2>
       ${optsHtml}
@@ -688,6 +829,18 @@ function submitSliders(){
   render();
 }
 
+function submitPractical(){
+  const q = questions[state.step];
+  state.answers[q.key] = {
+    km: document.getElementById('field-km').value.trim(),
+    plaats: document.getElementById('field-plaats').value.trim(),
+    salaris: document.getElementById('field-salaris').value.trim(),
+    exclusie: document.getElementById('field-exclusie').value.trim()
+  };
+  state.showingInsight = true;
+  render();
+}
+
 function submitText(){
   const val = document.getElementById('textAnswer').value.trim();
   const q = questions[state.step];
@@ -711,6 +864,9 @@ function renderInsight(q){
 }
 
 function getInsightText(q, ans){
+  if(q.type === 'practical'){
+    return q.insight.default || "Genoteerd.";
+  }
   if(ans && typeof ans === 'object'){
     const sorted = Object.entries(ans).sort((a,b)=>b[1]-a[1]);
     const [topKey, topVal] = sorted[0];
@@ -738,7 +894,8 @@ function profileTags(){
     autonomie:"Zelfstandig", meesterschap:"Vakgericht", verbondenheid:"Teamgericht", impact:"Ambitieus"
   };
   const tags = [];
-  Object.values(a).forEach(v=>{
+  Object.entries(a).forEach(([key,v])=>{
+    if(key === 'praktisch') return;
     if(v && typeof v === 'object'){
       Object.entries(v)
         .sort((x,y)=>y[1]-x[1])
