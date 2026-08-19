@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kayak — Overzicht</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#132033; --ink-soft:#3c4a5c; --paper:#F1F3F0; --card:#FFFFFF; --line:#DBE0DA;
+    --amber:#DE9A3C; --amber-soft:#F5E3C4; --teal:#4F8C86; --teal-soft:#DCEAE7;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;justify-content:center;padding:32px 16px 60px;}
+  .app{width:100%;max-width:560px;}
+  .brand{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:8px;}
+  .brand-name{font-family:'Fraunces',serif;font-weight:600;font-size:20px;}
+  .brand-tag{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink-soft);background:var(--card);border:1px solid var(--line);padding:3px 8px;border-radius:20px;}
+
+  h1{font-family:'Fraunces',serif;font-weight:500;font-size:27px;line-height:1.3;margin:22px 0 10px;letter-spacing:-0.01em;}
+  .lede{font-size:14.5px;color:var(--ink-soft);line-height:1.6;margin:0 0 34px;max-width:48ch;}
+
+  .nav-cards{display:flex;flex-direction:column;gap:14px;}
+  .nav-card{
+    display:block;
+    background:var(--card);
+    border:1.5px solid var(--line);
+    border-radius:16px;
+    padding:22px 24px;
+    text-decoration:none;
+    color:var(--ink);
+    transition:all .15s ease;
+  }
+  .nav-card:hover{border-color:var(--teal);transform:translateY(-1px);}
+  .nav-num{
+    font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.05em;text-transform:uppercase;
+    color:var(--teal);margin-bottom:8px;
+  }
+  .nav-title{font-family:'Fraunces',serif;font-weight:600;font-size:20px;margin:0 0 6px;}
+  .nav-sub{font-size:13.5px;color:var(--ink-soft);line-height:1.55;margin:0;}
+  .nav-arrow{
+    display:inline-block;margin-top:12px;font-family:'JetBrains Mono',monospace;font-size:11.5px;
+    color:var(--ink);font-weight:600;
+  }
+
+  .footer-note{
+    margin-top:32px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    color:var(--ink-soft);
+    text-align:center;
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="brand">
+    <div class="brand-name">kayak</div>
+    <div class="brand-tag">intern overzicht</div>
+  </div>
+
+  <h1>Waar we nu staan</h1>
+  <p class="lede">Drie manieren om hetzelfde verhaal te bekijken — het grotere plaatje, en de twee losse demo's die kandidaten straks doorlopen.</p>
+
+  <div class="nav-cards">
+    <a class="nav-card" href="funnel.html">
+      <div class="nav-num">01 · het grotere plaatje</div>
+      <div class="nav-title">Funnel: van social media tot kennismaking</div>
+      <p class="nav-sub">Hoe bezoekers via socials binnenkomen en via twee conversiemomenten richting een recruiter bewegen.</p>
+      <span class="nav-arrow">Bekijk de funnel →</span>
+    </a>
+
+    <a class="nav-card" href="index.html">
+      <div class="nav-num">02 · eerste bezoek</div>
+      <div class="nav-title">Intake-MVP</div>
+      <p class="nav-sub">7 luchtige vragen die het eerste matchingprofiel opbouwen, met een live vacature-teller.</p>
+      <span class="nav-arrow">Open de demo →</span>
+    </a>
+
+    <a class="nav-card" href="flitsprofiel.html">
+      <div class="nav-num">03 · vertrouwen winnen</div>
+      <div class="nav-title">Flitsprofiel</div>
+      <p class="nav-sub">10 speelse dit-of-dat-vragen, eindigt in een persoonlijk profielkaartje vlak vóór de kennismaking.</p>
+      <span class="nav-arrow">Open de demo →</span>
+    </a>
+  </div>
+
+  <div class="footer-note">Interne concept-omgeving — nog niet gekoppeld aan de 190k-vacaturedatabase</div>
+</div>
+</body>
+</html>

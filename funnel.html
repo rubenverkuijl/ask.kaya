@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kayak — Funnel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#132033; --ink-soft:#3c4a5c; --paper:#F1F3F0; --card:#FFFFFF; --line:#DBE0DA;
+    --amber:#DE9A3C; --amber-soft:#F5E3C4; --teal:#4F8C86; --teal-soft:#DCEAE7;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;justify-content:center;padding:32px 16px 60px;}
+  .app{width:100%;max-width:560px;}
+  .brand{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:8px;}
+  .brand-name{font-family:'Fraunces',serif;font-weight:600;font-size:20px;}
+  .back-link{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--ink-soft);text-decoration:none;}
+  .back-link:hover{color:var(--teal);}
+
+  h1{font-family:'Fraunces',serif;font-weight:500;font-size:26px;line-height:1.3;margin:20px 0 8px;letter-spacing:-0.01em;}
+  .lede{font-size:14.5px;color:var(--ink-soft);line-height:1.6;margin:0 0 36px;max-width:48ch;}
+
+  .funnel{display:flex;flex-direction:column;align-items:center;gap:0;}
+  .stage{
+    width:100%;
+    border-radius:14px;
+    padding:20px 24px;
+    text-align:center;
+    position:relative;
+    margin-bottom:26px;
+  }
+  .stage-eyebrow{font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;margin-bottom:6px;opacity:.75;}
+  .stage-title{font-family:'Fraunces',serif;font-weight:600;font-size:18px;margin:0 0 4px;}
+  .stage-sub{font-size:13px;line-height:1.5;}
+
+  .stage.s1{background:var(--card);border:1.5px solid var(--line);width:100%;}
+  .stage.s2{background:var(--card);border:1.5px solid var(--line);width:92%;}
+  .stage.s3{background:var(--teal-soft);border:1.5px solid var(--teal);width:82%;}
+  .stage.s4{background:var(--teal-soft);border:1.5px solid var(--teal);width:72%;}
+  .stage.s5{background:var(--ink);width:62%;}
+  .stage.s5 .stage-title, .stage.s5 .stage-sub{color:#fff;}
+  .stage.s5 .stage-eyebrow{color:var(--amber);opacity:1;}
+
+  .stage-link{
+    display:inline-block;margin-top:10px;font-family:'JetBrains Mono',monospace;font-size:11px;
+    color:var(--teal);text-decoration:none;border-bottom:1px solid var(--teal);
+  }
+  .stage.s5 .stage-link{color:var(--amber);border-color:var(--amber);}
+
+  .connector{
+    width:2px;height:26px;background:var(--line);margin-bottom:0;
+  }
+
+  .note{
+    margin-top:30px;
+    background:var(--amber-soft);
+    border:1.5px dashed #C98A38;
+    border-radius:12px;
+    padding:14px 16px;
+    font-size:12.5px;
+    line-height:1.6;
+    color:#5c4416;
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="brand">
+    <div class="brand-name">kayak</div>
+    <a class="back-link" href="overview.html">← overzicht</a>
+  </div>
+
+  <h1>Van social media naar kennismaking</h1>
+  <p class="lede">Dit is het marketingperspectief op dezelfde reis — waar bezoekers vandaan komen, en op welke twee momenten we ze overtuigen om door te gaan.</p>
+
+  <div class="funnel">
+    <div class="stage s1">
+      <div class="stage-eyebrow">Bron</div>
+      <div class="stage-title">Social media &amp; content</div>
+      <div class="stage-sub">Advertenties, organische posts, doorverwijzingen</div>
+    </div>
+    <div class="connector"></div>
+
+    <div class="stage s2">
+      <div class="stage-eyebrow">Landing</div>
+      <div class="stage-title">Website bezoek</div>
+      <div class="stage-sub">Eerste indruk — geen vacature-titels, wel een uitnodiging</div>
+    </div>
+    <div class="connector"></div>
+
+    <div class="stage s3">
+      <div class="stage-eyebrow">Conversiemoment 1</div>
+      <div class="stage-title">Eerste bezoek — intake</div>
+      <div class="stage-sub">7 luchtige vragen, bouwt het eerste matchingprofiel op</div>
+      <a class="stage-link" href="index.html">Open de demo →</a>
+    </div>
+    <div class="connector"></div>
+
+    <div class="stage s4">
+      <div class="stage-eyebrow">Conversiemoment 2</div>
+      <div class="stage-title">Flitsprofiel</div>
+      <div class="stage-sub">10 speelse dit-of-dat-vragen, bouwt vertrouwen en nieuwsgierigheid</div>
+      <a class="stage-link" href="flitsprofiel.html">Open de demo →</a>
+    </div>
+    <div class="connector"></div>
+
+    <div class="stage s5">
+      <div class="stage-eyebrow">Doel</div>
+      <div class="stage-title">Kennismaking met recruiter</div>
+      <div class="stage-sub">Persoonlijke aandacht, verdieping — hier wint Kayak vertrouwen</div>
+    </div>
+  </div>
+
+  <div class="note">Nog geen live conversiecijfers per stap — dit is de bedoelde flow, geen gemeten funnel. Zodra dit live staat, is dit precies de plek om per stap uitval te gaan meten.</div>
+</div>
+</body>
+</html>
