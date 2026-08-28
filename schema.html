@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kayak — Schema</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{ --pine:#092628; --ember:#FF5D53; --ink-soft:#4C6567; --warmbeach:#E9DCCB; --line:#DDD0BC; }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--warmbeach);color:var(--pine);font-family:'Inter',sans-serif;min-height:100vh;padding:32px 5vw 60px;}
+  .wrap{max-width:760px;margin:0 auto;}
+  .brand{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:8px;}
+  .brand-name{font-family:'Fraunces',serif;font-weight:600;font-size:20px;}
+  .back-link{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--ink-soft);text-decoration:none;}
+  .back-link:hover{color:var(--ember);}
+  h1{font-family:'Fraunces',serif;font-weight:500;font-size:26px;margin:20px 0 8px;}
+  .lede{font-size:14px;color:var(--ink-soft);line-height:1.6;margin:0 0 28px;max-width:56ch;}
+  .diagram-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px;}
+  svg{width:100%;height:auto;display:block;}
+  .legend-note{margin-top:16px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink-soft);text-align:center;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">
+    <div class="brand-name">kayak</div>
+    <a class="back-link" href="landing.html">← terug naar landingspagina</a>
+  </div>
+  <h1>De kandidaatreis</h1>
+  <p class="lede">Instroom, matching, opdracht en off-boarding — met de landingspagina en de vragenlijst-in-twee-delen als startpunt.</p>
+
+  <div class="diagram-card">
+    <svg viewBox="0 0 680 540" role="img">
+      <title>Candidate journey</title>
+      <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="#8A8A85" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+      </defs>
+
+      <rect x="40" y="18" width="12" height="12" rx="3" fill="#0F6E56"/>
+      <text x="58" y="27" font-size="11" fill="#4C6567" font-family="JetBrains Mono, monospace">Instroom</text>
+      <rect x="150" y="18" width="12" height="12" rx="3" fill="#534AB7"/>
+      <text x="168" y="27" font-size="11" fill="#4C6567" font-family="JetBrains Mono, monospace">Matching</text>
+      <rect x="270" y="18" width="12" height="12" rx="3" fill="#993C1D"/>
+      <text x="288" y="27" font-size="11" fill="#4C6567" font-family="JetBrains Mono, monospace">Opdracht</text>
+      <rect x="380" y="18" width="12" height="12" rx="3" fill="#5F5E5A"/>
+      <text x="398" y="27" font-size="11" fill="#4C6567" font-family="JetBrains Mono, monospace">Off-boarding</text>
+
+      <line x1="170" y1="118" x2="190" y2="118" stroke="#8A8A85" stroke-width="1" marker-end="url(#arrow)"/>
+      <line x1="320" y1="118" x2="340" y2="118" stroke="#8A8A85" stroke-width="1" marker-end="url(#arrow)"/>
+      <line x1="470" y1="118" x2="490" y2="118" stroke="#8A8A85" stroke-width="1" marker-end="url(#arrow)"/>
+      <path d="M555 146 L555 200 L105 200 L105 248" fill="none" stroke="#8A8A85" stroke-width="1" marker-end="url(#arrow)"/>
+
+      <g>
+        <rect x="40" y="90" width="130" height="56" rx="8" fill="#E3F1EE" stroke="#0F6E56" stroke-width="1"/>
+        <text x="105" y="110" text-anchor="middle" font-size="13" font-weight="600" fill="#0B4A3D" font-family="Inter, sans-serif">Ask Kaya</text>
+        <text x="105" y="128" text-anchor="middle" font-size="11" fill="#0B4A3D" opacity="0.75" font-family="Inter, sans-serif">Chat + 3 paden</text>
+      </g>
+      <g>
+        <rect x="190" y="90" width="130" height="56" rx="8" fill="#E3F1EE" stroke="#0F6E56" stroke-width="1"/>
+        <text x="255" y="110" text-anchor="middle" font-size="13" font-weight="600" fill="#0B4A3D" font-family="Inter, sans-serif">Vragenlijst 1</text>
+        <text x="255" y="128" text-anchor="middle" font-size="11" fill="#0B4A3D" opacity="0.75" font-family="Inter, sans-serif">Matchingprofiel</text>
+      </g>
+      <g>
+        <rect x="340" y="90" width="130" height="56" rx="8" fill="#E3F1EE" stroke="#0F6E56" stroke-width="1"/>
+        <text x="405" y="110" text-anchor="middle" font-size="13" font-weight="600" fill="#0B4A3D" font-family="Inter, sans-serif">Vragenlijst 2</text>
+        <text x="405" y="128" text-anchor="middle" font-size="11" fill="#0B4A3D" opacity="0.75" font-family="Inter, sans-serif">Flitsprofiel</text>
+      </g>
+      <g>
+        <rect x="490" y="90" width="130" height="56" rx="8" fill="#E3F1EE" stroke="#0F6E56" stroke-width="1"/>
+        <text x="555" y="110" text-anchor="middle" font-size="13" font-weight="600" fill="#0B4A3D" font-family="Inter, sans-serif">Kennismaking</text>
+        <text x="555" y="128" text-anchor="middle" font-size="11" fill="#0B4A3D" opacity="0.75" font-family="Inter, sans-serif">Met recruiter</text>
+      </g>
+
+      <line x1="170" y1="278" x2="190" y2="278" stroke="#8A8A85" stroke-width="1" marker-end="url(#arrow)"/>
+      <line x1="320" y1="278" x2="340" y2="278" stroke="#8A8A85" stroke-width="1" marker-end="url(#arrow)"/>
+      <line x1="470" y1="278" x2="490" y2="278" stroke="#8A8A85" stroke-width="1" marker-end="url(#arrow)"/>
+      <path d="M555 306 L555 360 L105 360 L105 408" fill="none" stroke="#8A8A85" stroke-width="1" marker-end="url(#arrow)"/>
+
+      <g>
+        <rect x="40" y="250" width="130" height="56" rx="8" fill="#ECE9FA" stroke="#534AB7" stroke-width="1"/>
+        <text x="105" y="270" text-anchor="middle" font-size="13" font-weight="600" fill="#3B2E80" font-family="Inter, sans-serif">Assessment</text>
+        <text x="105" y="288" text-anchor="middle" font-size="11" fill="#3B2E80" opacity="0.75" font-family="Inter, sans-serif">Nog te bouwen</text>
+      </g>
+      <g>
+        <rect x="190" y="250" width="130" height="56" rx="8" fill="#ECE9FA" stroke="#534AB7" stroke-width="1"/>
+        <text x="255" y="270" text-anchor="middle" font-size="13" font-weight="600" fill="#3B2E80" font-family="Inter, sans-serif">Profiel</text>
+        <text x="255" y="288" text-anchor="middle" font-size="11" fill="#3B2E80" opacity="0.75" font-family="Inter, sans-serif">Alle data</text>
+      </g>
+      <g>
+        <rect x="340" y="250" width="130" height="56" rx="8" fill="#ECE9FA" stroke="#534AB7" stroke-width="1"/>
+        <text x="405" y="270" text-anchor="middle" font-size="13" font-weight="600" fill="#3B2E80" font-family="Inter, sans-serif">Matches</text>
+        <text x="405" y="288" text-anchor="middle" font-size="11" fill="#3B2E80" opacity="0.75" font-family="Inter, sans-serif">Matching</text>
+      </g>
+      <g>
+        <rect x="490" y="250" width="130" height="56" rx="8" fill="#ECE9FA" stroke="#534AB7" stroke-width="1"/>
+        <text x="555" y="270" text-anchor="middle" font-size="13" font-weight="600" fill="#3B2E80" font-family="Inter, sans-serif">Introductie</text>
+        <text x="555" y="288" text-anchor="middle" font-size="11" fill="#3B2E80" opacity="0.75" font-family="Inter, sans-serif">Opdrachtgever</text>
+      </g>
+
+      <line x1="170" y1="438" x2="190" y2="438" stroke="#8A8A85" stroke-width="1" marker-end="url(#arrow)"/>
+      <line x1="320" y1="438" x2="340" y2="438" stroke="#8A8A85" stroke-width="1" marker-end="url(#arrow)"/>
+      <line x1="470" y1="438" x2="490" y2="438" stroke="#8A8A85" stroke-width="1" stroke-dasharray="3 3" marker-end="url(#arrow)"/>
+
+      <g>
+        <rect x="40" y="410" width="130" height="56" rx="8" fill="#FAE6DD" stroke="#993C1D" stroke-width="1"/>
+        <text x="105" y="430" text-anchor="middle" font-size="13" font-weight="600" fill="#7A2F17" font-family="Inter, sans-serif">Plaatsing</text>
+        <text x="105" y="448" text-anchor="middle" font-size="11" fill="#7A2F17" opacity="0.75" font-family="Inter, sans-serif">Start opdracht</text>
+      </g>
+      <g>
+        <rect x="190" y="410" width="130" height="56" rx="8" fill="#FAE6DD" stroke="#993C1D" stroke-width="1"/>
+        <text x="255" y="430" text-anchor="middle" font-size="13" font-weight="600" fill="#7A2F17" font-family="Inter, sans-serif">Functioneren</text>
+        <text x="255" y="448" text-anchor="middle" font-size="11" fill="#7A2F17" opacity="0.75" font-family="Inter, sans-serif">Field mgmt</text>
+      </g>
+      <g>
+        <rect x="340" y="410" width="130" height="56" rx="8" fill="#FAE6DD" stroke="#993C1D" stroke-width="1"/>
+        <text x="405" y="430" text-anchor="middle" font-size="13" font-weight="600" fill="#7A2F17" font-family="Inter, sans-serif">Doorplaatsing</text>
+        <text x="405" y="448" text-anchor="middle" font-size="11" fill="#7A2F17" opacity="0.75" font-family="Inter, sans-serif">Nieuwe opdracht</text>
+      </g>
+      <g>
+        <rect x="490" y="410" width="130" height="56" rx="8" fill="#EDEDEC" stroke="#5F5E5A" stroke-width="1"/>
+        <text x="555" y="430" text-anchor="middle" font-size="13" font-weight="600" fill="#3F3E3B" font-family="Inter, sans-serif">Off-boarding</text>
+        <text x="555" y="448" text-anchor="middle" font-size="11" fill="#3F3E3B" opacity="0.75" font-family="Inter, sans-serif">Einde traject</text>
+      </g>
+
+      <text x="555" y="490" text-anchor="middle" font-size="11" fill="#4C6567" font-family="JetBrains Mono, monospace">↺ terug als kandidaat</text>
+
+      <path d="M255 410 L255 390 L255 308" fill="none" stroke="#BA7517" stroke-width="1" stroke-dasharray="4 4" marker-end="url(#arrow)"/>
+      <text x="182" y="378" text-anchor="middle" font-size="11" fill="#854F0B" font-family="JetBrains Mono, monospace">↻ profiel</text>
+
+      <path d="M405 410 L405 395 L405 308" fill="none" stroke="#3C3489" stroke-width="1" stroke-dasharray="4 4" marker-end="url(#arrow)"/>
+      <text x="435" y="400" text-anchor="middle" font-size="11" fill="#3C3489" font-family="JetBrains Mono, monospace">↻ continu</text>
+    </svg>
+  </div>
+  <div class="legend-note">Klikbare versie met toelichtende vervolgvragen staat in de chat — dit is de statische versie voor snel overzicht</div>
+</div>
+</body>
+</html>

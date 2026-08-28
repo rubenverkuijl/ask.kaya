@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ask Kaya</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500;1,9..144,600&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#132033; --ink-soft:#3c4a5c; --paper:#F1F3F0; --card:#FFFFFF; --line:#DBE0DA;
+    --amber:#DE9A3C; --amber-soft:#F5E3C4; --teal:#4F8C86; --teal-soft:#DCEAE7;
+    --radius:18px;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;justify-content:center;padding:32px 16px 60px;}
+  .app{width:100%;max-width:480px;}
+
+  .brand{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:22px;}
+  .brand-name{font-family:'Fraunces',serif;font-weight:700;font-size:20px;letter-spacing:-0.01em;}
+  .brand-tag{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink-soft);background:var(--card);border:1px solid var(--line);padding:3px 8px;border-radius:20px;}
+
+  /* ---- Continuous progress bar with a checkpoint marker ---- */
+  .route{position:relative;height:24px;margin-bottom:22px;}
+  .route-track{position:absolute;top:50%;left:2px;right:2px;height:3px;background:var(--line);border-radius:2px;transform:translateY(-50%);}
+  .route-fill{position:absolute;top:50%;left:2px;height:3px;background:var(--amber);border-radius:2px;transform:translateY(-50%);width:0%;transition:width .4s ease;}
+  .checkpoint{
+    position:absolute;top:50%;transform:translate(-50%,-50%);
+    width:18px;height:18px;border-radius:50%;background:var(--card);border:2px solid var(--teal);
+    display:flex;align-items:center;justify-content:center;font-size:9px;z-index:2;
+  }
+  .prompt-eyebrow{
+    text-align:center;font-family:'JetBrains Mono',monospace;font-size:11px;
+    letter-spacing:.05em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:16px;
+  }
+
+  /* ---- Card (Part A: question form) ---- */
+  .card{background:var(--card);border-radius:var(--radius);border:1px solid var(--line);padding:28px 24px;min-height:340px;display:flex;flex-direction:column;box-shadow:0 1px 2px rgba(19,32,51,0.04);}
+  .eyebrow{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--teal);margin-bottom:10px;}
+  .back-link{background:none;border:none;padding:0;margin-bottom:16px;font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--ink-soft);cursor:pointer;display:inline-block;}
+  .back-link:hover{color:var(--teal);}
+  .start-card{justify-content:center;}
+  .start-card .question{font-size:24px;}
+  .start-card .card-footer{padding-top:26px;justify-content:flex-start;}
+
+  .question{font-family:'Fraunces',serif;font-weight:500;font-size:26px;line-height:1.28;margin:0 0 22px;letter-spacing:-0.01em;}
+  .question em{font-style:italic;color:var(--teal);}
+
+  .choices{display:flex;flex-direction:column;gap:10px;}
+  .choice-row{display:flex;gap:10px;}
+  .choice{flex:1;background:var(--paper);border:1.5px solid var(--line);border-radius:14px;padding:16px 14px;font-family:'Inter',sans-serif;font-size:15px;font-weight:600;color:var(--ink);cursor:pointer;text-align:left;transition:all .15s ease;line-height:1.35;}
+  .choice .sub{display:block;font-family:'Inter',sans-serif;font-weight:400;font-size:12.5px;color:var(--ink-soft);margin-top:3px;}
+  .choice:hover{border-color:var(--teal);transform:translateY(-1px);}
+  .choice.selected{background:var(--teal-soft);border-color:var(--teal);}
+  .choice.grid{flex:1 1 calc(50% - 5px);}
+  .choice-grid{display:flex;flex-wrap:wrap;gap:10px;}
+
+  .text-input{width:100%;border:1.5px solid var(--line);background:var(--paper);border-radius:14px;padding:14px;font-family:'Inter',sans-serif;font-size:15px;color:var(--ink);resize:none;min-height:78px;}
+  .text-input:focus{outline:none;border-color:var(--teal);}
+
+  .sliders{display:flex;flex-direction:column;gap:22px;}
+  .slider-row{display:flex;flex-direction:column;gap:8px;}
+  .slider-top{display:flex;justify-content:space-between;align-items:baseline;gap:10px;}
+  .slider-label{font-size:14px;font-weight:600;color:var(--ink);line-height:1.3;}
+  .slider-tier{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--teal);white-space:nowrap;}
+  input.slider{-webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:2px;background:var(--line);outline:none;}
+  input.slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:20px;height:20px;border-radius:50%;background:var(--teal);border:3px solid #fff;box-shadow:0 0 0 1px var(--teal);cursor:pointer;}
+  input.slider::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:var(--teal);border:3px solid #fff;box-shadow:0 0 0 1px var(--teal);cursor:pointer;}
+
+  .field-block{margin-bottom:20px;}
+  .field-label{display:block;font-size:14px;font-weight:600;color:var(--ink);margin-bottom:8px;}
+  .optional-tag{font-family:'JetBrains Mono',monospace;font-size:10.5px;font-weight:500;color:var(--ink-soft);text-transform:none;letter-spacing:0;}
+  .field-row{display:flex;align-items:center;flex-wrap:wrap;gap:8px;font-size:14.5px;font-weight:600;color:var(--ink);}
+  .inline-input{border:1.5px solid var(--line);background:var(--paper);border-radius:10px;padding:9px 10px;font-family:'Inter',sans-serif;font-size:14.5px;font-weight:600;color:var(--ink);min-width:0;}
+  .inline-input.small{width:64px;text-align:center;}
+  .inline-input:not(.small){flex:1;min-width:120px;}
+  .inline-input:focus{outline:none;border-color:var(--teal);}
+  .text-input-line{width:100%;border:1.5px solid var(--line);background:var(--paper);border-radius:10px;padding:12px;font-family:'Inter',sans-serif;font-size:14.5px;color:var(--ink);}
+  .text-input-line:focus{outline:none;border-color:var(--teal);}
+
+  .card-footer{margin-top:auto;padding-top:22px;display:flex;justify-content:flex-end;}
+  .btn{font-family:'Inter',sans-serif;font-weight:700;font-size:14px;border:none;border-radius:30px;padding:12px 22px;cursor:pointer;transition:all .15s ease;}
+  .btn-primary{background:var(--ink);color:#fff;}
+  .btn-primary:hover{background:#000;}
+  .btn-ghost{background:transparent;color:var(--ink-soft);padding:12px 8px;}
+
+  /* ---- Reciprocity insight (Part A) ---- */
+  .insight{background:var(--ink);color:#fff;border-radius:var(--radius);padding:24px;min-height:340px;display:flex;flex-direction:column;justify-content:center;}
+  .insight-label{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--amber);margin-bottom:14px;}
+  .insight-text{font-family:'Fraunces',serif;font-style:italic;font-weight:500;font-size:22px;line-height:1.4;margin:0 0 24px;}
+  .insight .btn-primary{background:var(--amber);color:var(--ink);}
+  .insight .btn-primary:hover{background:#e8ab52;}
+
+  /* ---- Part B: dit-of-dat cards ---- */
+  .vs-card{position:relative;border-radius:20px;overflow:hidden;border:1px solid var(--line);min-height:280px;box-shadow:0 1px 2px rgba(19,32,51,0.05);display:flex;flex-direction:column;}
+  .vs-half{padding:34px 22px;display:flex;align-items:center;justify-content:center;text-align:center;cursor:pointer;transition:transform .12s ease, filter .12s ease;flex:1;}
+  .vs-half:active{transform:scale(0.98);}
+  .vs-half.left{background:var(--teal-soft);}
+  .vs-half.right{background:var(--amber-soft);}
+  .vs-label{font-family:'Fraunces',serif;font-weight:600;font-size:22px;line-height:1.3;color:var(--ink);}
+  .vs-badge{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:38px;height:38px;border-radius:50%;background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;z-index:2;box-shadow:0 0 0 4px var(--paper);}
+  .cat-chip{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-soft);background:rgba(255,255,255,0.75);padding:3px 9px;border-radius:20px;z-index:2;}
+  .flash{animation:flashpop .28s ease;}
+  @keyframes flashpop{0%{filter:brightness(1);}40%{filter:brightness(0.85);}100%{filter:brightness(1);}}
+
+  /* ---- Unlock / final panels ---- */
+  .unlock-card, .final-card{background:var(--ink);color:#fff;border-radius:var(--radius);padding:30px 24px;text-align:center;}
+  .unlock-label, .final-eyebrow{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--amber);margin-bottom:10px;}
+  .unlock-title{font-family:'Fraunces',serif;font-weight:600;font-size:23px;line-height:1.3;margin:0 0 18px;}
+  .final-headline{font-family:'Fraunces',serif;font-style:italic;font-weight:600;font-size:25px;line-height:1.28;margin:0 0 14px;}
+  .final-body{font-size:14px;line-height:1.6;color:rgba(255,255,255,0.82);text-align:left;margin:0 0 22px;}
+
+  .group-label{font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;color:rgba(255,255,255,0.5);margin:0 0 8px;text-align:left;}
+  .tags{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:20px;}
+  .tags.left{justify-content:flex-start;}
+  .tag{font-family:'Inter',sans-serif;font-size:12.5px;font-weight:600;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.18);padding:6px 12px;border-radius:20px;}
+
+  .match-count{font-family:'JetBrains Mono',monospace;font-size:42px;font-weight:600;color:var(--amber);line-height:1;margin-bottom:6px;text-align:center;}
+  .match-sub{font-size:13px;color:rgba(255,255,255,0.65);margin-bottom:24px;text-align:center;}
+
+  .final-actions{display:flex;flex-direction:column;gap:10px;margin-top:6px;}
+  .btn-cta{background:var(--amber);color:var(--ink);font-size:15px;padding:15px;width:100%;}
+  .btn-cta:hover{background:#e8ab52;}
+  .btn-secondary{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,0.3);width:100%;}
+  .skip-note{margin-top:14px;text-align:center;}
+  .skip-note button{background:none;border:none;font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(255,255,255,0.45);cursor:pointer;}
+  .skip-note button:hover{color:#fff;}
+
+  .why-link{display:block;margin-top:18px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:11.5px;color:rgba(255,255,255,0.55);text-decoration:none;letter-spacing:.01em;}
+  .why-link:hover{color:var(--amber);}
+
+  .preview-jobs{margin-top:16px;display:none;flex-direction:column;gap:8px;text-align:left;}
+  .preview-jobs.active{display:flex;}
+  .job-card{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.14);color:#fff;border-radius:12px;padding:12px 14px;}
+  .job-title{font-weight:600;font-size:14px;margin-bottom:2px;}
+  .job-meta{font-size:12px;color:rgba(255,255,255,0.6);font-family:'JetBrains Mono',monospace;}
+
+  .disclaimer{margin-top:16px;text-align:center;font-size:11px;line-height:1.5;color:rgba(255,255,255,0.45);border-top:1px solid rgba(255,255,255,0.12);padding-top:12px;}
+
+  @media (max-width:380px){ .question{font-size:22px;} .vs-label{font-size:18px;} .final-headline{font-size:21px;} .match-count{font-size:36px;} }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="brand"><div class="brand-name">ask kaya</div><div class="brand-tag">concept</div></div>
+  <div class="route">
+    <div class="route-track"></div>
+    <div class="route-fill" id="routeFill"></div>
+    <div class="checkpoint" id="checkpoint" style="left:37.5%"></div>
+  </div>
+  <div id="promptEyebrow" class="prompt-eyebrow" style="display:none;"></div>
+  <div id="stage"></div>
+</div>
+
+<script>
+// ===========================================================
+// DEEL A — intake (6 vragen, 'omgeving' verwijderd, sector + financieel)
+// ===========================================================
+const questionsA = [
+  {
+    key: "drijfveer",
+    question: "Je werkt het liefst voor <em>een idee</em> waar je in gelooft, of voor <em>een resultaat</em> dat telbaar is?",
+    type: "choice",
+    options: [
+      { id: "idealistisch", label: "Een idee", sub: "Missie, betekenis, impact" },
+      { id: "commercieel", label: "Een resultaat", sub: "Targets, groei, tastbaar succes" }
+    ],
+    insight: {
+      idealistisch: "Interessant — jij wilt 's avonds weten waaróm je iets deed, niet alleen wat.",
+      commercieel: "Helder. Jij houdt van een scorebord — vooruitgang moet zichtbaar zijn."
+    }
+  },
+  {
+    key: "schaal",
+    question: "Een team waarin je <em>iedereen bij naam</em> kent, of een organisatie met een <em>duidelijk pad naar boven</em>?",
+    type: "choice",
+    options: [
+      { id: "klein", label: "Klein team", sub: "Korte lijnen, direct contact" },
+      { id: "groot", label: "Groot bedrijf", sub: "Structuur, groeimogelijkheden" }
+    ],
+    insight: {
+      klein: "Dat verklaart veel — jij wilt impact vóelen, niet alleen zien op een organogram.",
+      groot: "Logisch. Jij denkt liever in een loopbaan dan in een losse baan."
+    }
+  },
+  {
+    key: "sector",
+    question: "Welke wereld trekt je het meest?",
+    type: "grid",
+    options: [
+      { id: "zorg", label: "Zorg & welzijn" },
+      { id: "energie", label: "Energie & duurzaamheid" },
+      { id: "techniek", label: "Techniek & industrie" },
+      { id: "financieel", label: "Finance & zakelijke dienstverlening" },
+      { id: "bouw", label: "Bouw & infra" },
+      { id: "commercieel", label: "Sales & commercie" },
+      { id: "overig", label: "Nog geen idee" }
+    ],
+    insight: {
+      zorg: "Zorg trekt mensen die verantwoordelijkheid niet spannend vinden, maar vanzelfsprekend.",
+      energie: "De energiesector heeft nu meer vacatures dan mensen — jouw timing is toevallig goed.",
+      techniek: "Techniek beloont mensen die liever begrijpen hóe iets werkt dan wát het doet.",
+      financieel: "Finance trekt mensen aan voor wie een verschil van één cent nooit onbelangrijk voelt.",
+      bouw: "Bouw en infra draaien op mensen die aan het eind van de dag iets kunnen aanwijzen.",
+      commercieel: "Sales is een van de weinige vakken waar je resultaat dagelijks zwart-op-wit ziet.",
+      overig: "Eerlijk antwoord — en precies waar een goed gesprek met een recruiter voor is."
+    }
+  },
+  {
+    key: "energiebron",
+    question: "Waar haal jij nu energie uit? <em>Meerdere antwoorden mogen hoog staan.</em>",
+    type: "sliders",
+    options: [
+      { id: "autonomie", label: "Vrijheid om het op mijn manier te doen" },
+      { id: "meesterschap", label: "Merkbaar beter worden in mijn vak" },
+      { id: "verbondenheid", label: "Een hecht team om me heen" },
+      { id: "impact", label: "Meer verantwoordelijkheid en invloed" }
+    ],
+    insight: {
+      autonomie: "Voor jou is een goede baan er een waarin niemand over je schouder meekijkt.",
+      meesterschap: "Voor jou begint het pas echt interessant te worden zodra het moeilijk wordt.",
+      verbondenheid: "Voor jou staat of valt een baan met de mensen ernaast, niet ernboven.",
+      impact: "Jij wilt niet alleen meedoen — je wilt dat je aanwezigheid uitmaakt.",
+      balanced: "Best evenwichtig — geen enkele drijfveer springt er sterk uit. Dat vertaalt zich later in een breder scala aan passende rollen."
+    }
+  },
+  {
+    key: "ambitie",
+    question: "Over 3 jaar ben je trots omdat…",
+    type: "text",
+    placeholder: "Maak de zin af — één regel is genoeg",
+    skipOption: { id: "geen_idee", label: "Daar ben ik niet zo mee bezig" },
+    insight: { default: "Perfect, daar houden we van.", geen_idee: "Perfect, daar houden we van." }
+  },
+  {
+    key: "praktisch",
+    question: "Nog een paar praktische dingen, dan zijn we klaar met dit stuk.",
+    type: "practical",
+    insight: { default: "Dankjewel — dit gebruiken we direct om de matches scherper te maken." }
+  }
+];
+
+// ===========================================================
+// DEEL B — flitsprofiel (dit-of-dat, ongewijzigd overgenomen)
+// ===========================================================
+const POOL = {
+  grappig: [
+    ["Soep", "Pasta"], ["Komische film", "Cabaretier"], ["Ochtendmens", "Nachtuil"],
+    ["Kattenpersoon", "Hondenpersoon"], ["Appeltaart", "Slagroomtaart"], ["Serie bingen", "Boek uitlezen"],
+    ["Vrijdagmiddagborrel", "Vrijdagmiddag stilletjes ontsnappen"], ["Zingen in de auto", "Zingen onder de douche"],
+    ["Per ongeluk reply-all", "Per ongeluk ingesproken voicemail"], ["Automatische deuren", "Draaideuren"],
+    ["Ontbijt op bed", "Ontbijt op een terras"], ["Autoradio hard", "Koptelefoon in"],
+    ["Een emoji sturen", "Een gif sturen"], ["Een handgeschreven kaart", "Een appje"],
+    ["Voetbal kijken", "Voetbal zelf spelen"], ["Verjaardag groots vieren", "Verjaardag stilletjes vieren"],
+    ["Croissant", "Krentenbol"], ["Karaoke doen", "Karaoke aanhoren"], ["Een goede dansmove", "Een goede grap"],
+    ["Vroeg naar een feestje", "Als laatste op een feestje"], ["Zelf koken", "Laten bezorgen"],
+    ["Appelsap", "Sinaasappelsap"], ["Filmavond", "Bordspelavond"],
+    ["Een goed excuus om weg te gaan", "Gewoon blijven tot het einde"], ["Zelf de gitaar pakken", "Alleen luisteren"],
+    ["Een dutje", "Een wandeling"], ["Chips", "Bitterballen"], ["Onhandig dansen", "Helemaal niet dansen"],
+    ["Een goede binnenkomer", "Een goede uitsmijter"],
+    ["Een goede running gag", "Een goede oneliner"], ["Vroeg je cadeau openmaken", "Wachten tot iedereen kijkt"],
+    ["Zelf de foto's regelen", "Gewoon op de foto staan"], ["Een goede imitatie", "Een goed verhaal"],
+    ["Een spontaan feestje", "Een goed voorbereid feestje"], ["De afwas meteen doen", "De afwas laten staan"],
+    ["Zelf de muziek uitkiezen", "Een afspeellijst van een ander"],
+    ["Een goed gesprek bij de koffieautomaat", "Een goed gesprek bij de lunch"],
+    ["De rekening splitsen", "Om de beurt trakteren"], ["Een quiz winnen", "Een quiz maken"]
+  ],
+  persoonlijk: [
+    ["Bergen", "Strand"], ["Diner voor twee", "Festival"],
+    ["Morgen een instrument kunnen spelen", "Morgen een nieuwe sport kunnen beoefenen"],
+    ["Stad", "Dorp"], ["Vroeg beginnen", "Laat doorgaan"], ["Plannen", "Spontaan"], ["Reizen", "Thuis je plek inrichten"],
+    ["Een dag helemaal niks", "Een dag helemaal vol"], ["Verrassing", "Van tevoren weten wat je krijgt"],
+    ["Alles zelf uitzoeken", "Een goede gids volgen"], ["Een nieuw restaurant proberen", "Terug naar je vaste stamtent"],
+    ["Vroeg op", "Uitslapen"], ["Nooit meer hoeven kiezen", "Elke dag opnieuw mogen kiezen"],
+    ["Warme chocolademelk", "IJskoffie"], ["Een nieuwe plek ontdekken", "Je favoriete plek herhalen"],
+    ["Vroeg boeken", "Last-minute boeken"], ["Muziek van vroeger", "Muziek van nu"], ["Wandelen", "Fietsen"],
+    ["Zon", "Regen met een goed boek"], ["Kamperen", "Hotel"], ["Alles opschrijven", "Alles onthouden"],
+    ["Vroeg vakantie plannen", "Vakantie laten gebeuren"], ["Een boek lezen", "Een podcast luisteren"],
+    ["Alleen op reis", "Met vrienden op reis"], ["Iets nieuws leren", "Iets bekends perfectioneren"],
+    ["Buiten sporten", "Binnen sporten"], ["Koken voor anderen", "Koken voor jezelf"], ["Een tuin", "Een balkon"],
+    ["Vroeg naar bed", "Laat naar bed"], ["Handmatig", "Digitaal"], ["Zelf klussen", "Iemand inhuren"],
+    ["Rust na een drukke week", "Actie na een drukke week"], ["Cadeaus zelf maken", "Cadeaus kopen"],
+    ["Warm eten", "Koud eten"], ["Eén vaste hobby", "Steeds iets nieuws proberen"],
+    ["Muziek tijdens het werk", "Stilte tijdens het werk"], ["Een grote vriendengroep", "Een paar hechte vrienden"],
+    ["Een dag zonder telefoon", "Een dag zonder afspraken"], ["Zelf een recept verzinnen", "Een recept precies volgen"],
+    ["Een marathon lopen", "Een berg beklimmen"], ["Vroeg in het jaar plannen maken", "Het jaar op je laten afkomen"],
+    ["Een nieuwe taal leren", "Een instrument leren"], ["Thuis een film kijken", "Naar de bioscoop gaan"],
+    ["Een dag aan het water", "Een dag in het bos"], ["Zelf verhuizen", "Een verhuizer inhuren"],
+    ["Een dagboek bijhouden", "Foto's bewaren"], ["Vroeg in de ochtend sporten", "'s Avonds sporten"],
+    ["Iets repareren", "Iets nieuws kopen"], ["Een verrassingsfeestje geven", "Een verrassingsfeestje krijgen"],
+    ["Zelf plannen maken met vrienden", "Uitgenodigd worden"],
+    ["Een stad te voet ontdekken", "Een stad op de fiets ontdekken"],
+    ["Een weekend weg", "Een weekend thuis"]
+  ],
+  organisatie: [
+    ["Groot bedrijf", "Klein bedrijf"], ["Goed doel", "Beursgenoteerd"], ["Familiebedrijf", "Internationale keten"],
+    ["Vaste structuur", "Voortdurend in beweging"], ["Bekende naam", "Onbekende parel"], ["Kantoor met historie", "Splinternieuw pand"],
+    ["Vaste kantoortijden", "Werken wanneer het jou uitkomt"], ["Een missie op de muur", "Resultaten op het scorebord"],
+    ["Net opgericht", "Al generaties lang bezig"], ["Platte organisatie", "Duidelijke hiërarchie"],
+    ["Eén groot kantoor", "Overal een klein kantoortje"], ["Vaste baan", "Freelance opdrachten"],
+    ["Open kantoortuin", "Eigen kamer"], ["Groeien met het bedrijf mee", "Instappen bij een bedrijf dat al loopt"],
+    ["Veel vergaderingen", "Weinig vergaderingen"], ["Eigen koffiecorner", "Kantine met een chef"],
+    ["Thuiswerken", "Op kantoor"], ["Snelle beslissingen", "Zorgvuldige beslissingen"], ["Klein en hecht", "Groot en verspreid"],
+    ["Duidelijke functietitels", "Rollen die meebewegen"], ["Een kantoor in de stad", "Een kantoor buiten de stad"],
+    ["Bekend om kwaliteit", "Bekend om innovatie"], ["Eén vaste manager", "Wisselende leidinggevenden"],
+    ["Veel structuur", "Veel vrijheid"], ["Groeien in aantal medewerkers", "Groeien in impact"],
+    ["Traditionele branche", "Nieuwe branche"], ["Zichtbaar op social media", "Liever op de achtergrond"],
+    ["Internationale collega's", "Lokale collega's"], ["Bedrijfsuitjes", "Liever gewoon vrij"],
+    ["Vaste beoordelingsmomenten", "Doorlopende feedback"], ["Werken volgens een handboek", "Werken op gevoel"],
+    ["Werken bij de oprichters", "Werken bij professioneel management"], ["Eén kantoorlocatie", "Meerdere vestigingen"],
+    ["Een bedrijf met een duidelijke visie", "Een bedrijf dat zich constant aanpast"],
+    ["Beoordeeld op resultaat", "Beoordeeld op inzet"], ["Werken met vaste klanten", "Werken met wisselende klanten"],
+    ["Een informele sfeer", "Een professionele sfeer"],
+    ["Zelf verantwoordelijk voor je ontwikkeling", "Een vast opleidingsplan"],
+    ["Een organisatie die risico's neemt", "Een organisatie die zekerheid biedt"],
+    ["Snel groeiend", "Stabiel gevestigd"], ["Beloond met bonussen", "Beloond met vrije tijd"],
+    ["Werken met een klein budget", "Werken met veel middelen"]
+  ],
+  functie: [
+    ["Uitvoerend", "Manager"], ["Specialiseren", "Breed inzetbaar"], ["Vast team", "Wisselende projecten"],
+    ["Achter de schermen", "Voorop"], ["Uitvoeren wat is afgesproken", "Zelf het plan bepalen"], ["Diepgaand één ding", "Overzicht over veel dingen"],
+    ["Elke dag hetzelfde overzicht", "Elke dag een verrassing"], ["Verantwoordelijk voor jezelf", "Verantwoordelijk voor anderen"],
+    ["Het laatste woord hebben", "Het laatste zetje geven"], ["Werken met cijfers", "Werken met mensen"],
+    ["Nieuwe dingen bedenken", "Bestaande dingen verbeteren"], ["Eén groot project", "Veel kleine taken"],
+    ["Advies geven", "Advies opvolgen"], ["Vaste routine", "Elke dag anders"], ["Zelfstandig werken", "Samen werken"],
+    ["Een probleem oplossen", "Een probleem voorkomen"], ["Korte deadlines", "Lange trajecten"],
+    ["Klantcontact", "Achter de schermen werken"], ["Verantwoording afleggen", "Zelf verantwoording vragen"],
+    ["Werken met een vast script", "Werken zonder script"], ["Kwaliteit boven snelheid", "Snelheid boven kwaliteit"],
+    ["Een team opbouwen", "Een team overnemen"], ["Doelen halen", "Doelen stellen"],
+    ["Een plan uitvoeren", "Een plan maken"], ["Werken onder tijdsdruk", "Werken zonder druk"],
+    ["Overzicht houden", "In detail duiken"], ["Een taak afmaken", "Een taak overdragen"],
+    ["Werken met vaste collega's", "Werken met wisselende teams"], ["Zelf beslissingen nemen", "Beslissingen voorleggen"],
+    ["Een expert worden", "Van alles een beetje kennen"], ["Werken op locatie", "Werken op kantoor"]
+  ]
+};
+const DRAW_PLAN = { grappig: 3, persoonlijk: 3, organisatie: 2, functie: 2 };
+
+const ENERGY_TAGS = {
+  "Strand":1, "Bergen":-1, "Diner voor twee":1, "Festival":-1, "Stad":-1, "Dorp":1,
+  "Reizen":-1, "Thuis je plek inrichten":1, "Een dag helemaal niks":1, "Een dag helemaal vol":-1,
+  "Van tevoren weten wat je krijgt":1, "Verrassing":-1, "Een nieuw restaurant proberen":-1, "Terug naar je vaste stamtent":1,
+  "Uitslapen":1, "Warme chocolademelk":1, "IJskoffie":-1, "Kamperen":-1, "Hotel":1,
+  "Een weekend thuis":1, "Een weekend weg":-1, "Vaste structuur":1, "Voortdurend in beweging":-1,
+  "Kantoor met historie":1, "Splinternieuw pand":-1, "Vaste kantoortijden":1, "Werken wanneer het jou uitkomt":-1,
+  "Net opgericht":-1, "Al generaties lang bezig":1, "Snel groeiend":-1, "Stabiel gevestigd":1,
+  "Een organisatie die risico's neemt":-1, "Een organisatie die zekerheid biedt":1,
+  "Traditionele branche":1, "Nieuwe branche":-1, "Vast team":1, "Wisselende projecten":-1,
+  "Diepgaand één ding":1, "Overzicht over veel dingen":-1, "Elke dag hetzelfde overzicht":1, "Elke dag een verrassing":-1,
+  "Vaste routine":1, "Elke dag anders":-1, "Werken met vaste collega's":1, "Werken met wisselende teams":-1,
+  "Werken met een vast script":1, "Werken zonder script":-1,
+  "Morgen een instrument kunnen spelen":1, "Morgen een nieuwe sport kunnen beoefenen":-1,
+  "Plannen":1, "Spontaan":-1, "Alles zelf uitzoeken":-1, "Een goede gids volgen":1, "Vroeg op":-1,
+  "Nooit meer hoeven kiezen":1, "Elke dag opnieuw mogen kiezen":-1, "Een nieuwe plek ontdekken":-1, "Je favoriete plek herhalen":1,
+  "Vroeg boeken":1, "Last-minute boeken":-1, "Muziek van vroeger":1, "Muziek van nu":-1, "Zon":-1,
+  "Alles opschrijven":1, "Alles onthouden":-1, "Iets nieuws leren":-1, "Iets bekends perfectioneren":1,
+  "Vroeg naar bed":1, "Laat naar bed":-1, "Zelf klussen":-1, "Iemand inhuren":1,
+  "Rust na een drukke week":1, "Actie na een drukke week":-1, "Cadeaus zelf maken":-1, "Cadeaus kopen":1,
+  "Eén vaste hobby":1, "Steeds iets nieuws proberen":-1, "Zelf een recept verzinnen":-1, "Een recept precies volgen":1,
+  "Vroeg in het jaar plannen maken":1, "Het jaar op je laten afkomen":-1, "Thuis een film kijken":1, "Naar de bioscoop gaan":-1,
+  "Zelf verhuizen":-1, "Een verhuizer inhuren":1, "Iets repareren":-1, "Iets nieuws kopen":1,
+  "Zelf plannen maken met vrienden":-1, "Uitgenodigd worden":1,
+  "Vaste baan":1, "Freelance opdrachten":-1, "Groeien met het bedrijf mee":-1, "Instappen bij een bedrijf dat al loopt":1,
+  "Snelle beslissingen":-1, "Zorgvuldige beslissingen":1, "Eén vaste manager":1, "Wisselende leidinggevenden":-1,
+  "Vaste beoordelingsmomenten":1, "Doorlopende feedback":-1, "Een bedrijf met een duidelijke visie":1, "Een bedrijf dat zich constant aanpast":-1,
+  "Werken met vaste klanten":1, "Werken met wisselende klanten":-1,
+  "Nieuwe dingen bedenken":-1, "Bestaande dingen verbeteren":1, "Korte deadlines":-1, "Lange trajecten":1,
+  "Kwaliteit boven snelheid":1, "Snelheid boven kwaliteit":-1, "Werken onder tijdsdruk":-1, "Werken zonder druk":1
+};
+const REGIE_TAGS = {
+  "Manager":1, "Uitvoerend":-1, "Zelf het plan bepalen":1, "Uitvoeren wat is afgesproken":-1,
+  "Zelfstandig werken":1, "Samen werken":-1, "Zelf beslissingen nemen":1, "Beslissingen voorleggen":-1,
+  "Zelf verantwoordelijk voor je ontwikkeling":1, "Een vast opleidingsplan":-1, "Advies geven":1, "Advies opvolgen":-1,
+  "Werken bij de oprichters":1, "Werken bij professioneel management":-1, "Een plan maken":1, "Een plan uitvoeren":-1,
+  "Platte organisatie":1, "Duidelijke hiërarchie":-1, "Duidelijke functietitels":-1, "Rollen die meebewegen":1,
+  "Veel structuur":-1, "Veel vrijheid":1, "Werken volgens een handboek":-1, "Werken op gevoel":1,
+  "Het laatste woord hebben":1, "Het laatste zetje geven":-1, "Verantwoording afleggen":-1, "Zelf verantwoording vragen":1,
+  "Doelen stellen":1, "Doelen halen":-1
+};
+
+function axisAverage(answers, tagTable){
+  const scores = answers.map(a => tagTable[a.value]).filter(v => v !== undefined);
+  if(scores.length === 0) return null;
+  return scores.reduce((a,b)=>a+b, 0) / scores.length;
+}
+
+function buildProfileB(answers){
+  const persoonlijk = answers.filter(a=>a.cat==='persoonlijk');
+  const werk = answers.filter(a=>a.cat==='organisatie' || a.cat==='functie');
+  const persoonlijkEnergie = axisAverage(persoonlijk, ENERGY_TAGS);
+  const werkEnergie = axisAverage(werk, ENERGY_TAGS);
+  const regie = axisAverage(werk, REGIE_TAGS);
+  let headline, body;
+  if(persoonlijkEnergie !== null && werkEnergie !== null){
+    if(persoonlijkEnergie > 0 && werkEnergie < 0){
+      headline = "Rust waar het kan, actie waar het moet";
+      body = "In je vrije tijd zoek je kalmte en zekerheid — maar op het werk trekt juist beweging en verandering. Dat is geen tegenstrijdigheid: het lijkt erop dat jij zelf wilt bepalen wanneer het tempo omhoog gaat, niet dat het je wordt opgelegd.";
+    } else if(persoonlijkEnergie < 0 && werkEnergie > 0){
+      headline = "Buiten actief, op het werk de vaste factor";
+      body = "Privé zoek je liever iets nieuws op, maar op het werk lijkt een stabiele, voorspelbare omgeving je meer te liggen. Mogelijk fungeert werk voor jou als het rustpunt naast een actief leven.";
+    } else if(persoonlijkEnergie > 0 && werkEnergie > 0){
+      headline = "Privé en werk lopen bij jou gelijk op — richting kalmte";
+      body = "Zowel in je vrije tijd als op het werk kies je voor zekerheid en een vaste koers boven verrassing. Dat consistente patroon zegt waarschijnlijk iets over hoe belangrijk voorspelbaarheid voor je is, in beide werelden.";
+    } else {
+      headline = "Privé en werk lopen bij jou gelijk op — richting actie";
+      body = "Zowel in je vrije tijd als op het werk trekt beweging en verandering je meer dan rust. Stilstand is vermoedelijk niet waar jij van opknapt.";
+    }
+  } else if(regie !== null){
+    if(regie > 0){
+      headline = "Jij pakt graag zelf de regie";
+      body = "Uit je werk-gerelateerde keuzes valt vooral op dat jij liever zelf het plan bepaalt en beslissingen neemt, dan dat je een uitgestippeld pad volgt.";
+    } else {
+      headline = "Jij werkt het liefst binnen een duidelijk kader";
+      body = "Uit je werk-gerelateerde keuzes valt vooral op dat een duidelijk afgesproken kader je meer ligt dan zelf voortdurend de koers moeten bepalen.";
+    }
+    if(werkEnergie !== null){
+      body += werkEnergie > 0 ? " Daarbij zoek je in je werkomgeving ook meer stabiliteit dan verandering." : " Daarbij trekt een dynamische, veranderlijke werkomgeving je meer dan een voorspelbare.";
+    } else if(persoonlijkEnergie !== null){
+      body += persoonlijkEnergie > 0 ? " Privé zoek je daarnaast vooral rust en zekerheid." : " Privé trekt daarnaast vooral actie en verandering.";
+    }
+  } else if(werkEnergie !== null){
+    headline = werkEnergie > 0 ? "Op je werk zoek je vooral zekerheid" : "Op je werk trekt vooral verandering";
+    body = werkEnergie > 0 ? "Uit je keuzes rond organisatie en functie blijkt een voorkeur voor stabiliteit, structuur en het bekende pad." : "Uit je keuzes rond organisatie en functie blijkt een voorkeur voor beweging, verandering en nieuwe situaties.";
+  } else if(persoonlijkEnergie !== null){
+    headline = persoonlijkEnergie > 0 ? "In je vrije tijd kies je vooral voor rust" : "In je vrije tijd kies je vooral voor actie";
+    body = persoonlijkEnergie > 0 ? "Je persoonlijke keuzes wijzen op een voorkeur voor kalmte, zekerheid en het bekende." : "Je persoonlijke keuzes wijzen op een voorkeur voor beweging, spontaniteit en het nieuwe.";
+  } else {
+    headline = "Een begin van een beeld";
+    body = "Met deze combinatie van antwoorden is er nog geen uitgesproken patroon te zien — dat wordt scherper naarmate er meer vragen bij komen.";
+  }
+  return { headline, body };
+}
+function shuffle(arr){ const a=arr.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+function drawSession(){
+  let cards = [];
+  Object.entries(DRAW_PLAN).forEach(([cat,n])=>{
+    shuffle(POOL[cat]).slice(0,n).forEach(pair => cards.push({ cat, left: pair[0], right: pair[1] }));
+  });
+  return shuffle(cards);
+}
+function labelForCat(cat){ return { grappig:"Even lachen", persoonlijk:"Persoonlijk", organisatie:"Organisatie", functie:"Manier van werken" }[cat] || cat; }
+function escapeQ(s){ return s.replace(/'/g, "\\'"); }
+
+const jobPool = [
+  { title:"Servicetechnicus Energietransitie", meta:"Amsterdam · 32-40u · Vast" },
+  { title:"Zorgondersteuner Wijkteam", meta:"Hoofddorp · 24-36u · Detachering" },
+  { title:"Projectcoördinator Duurzame Bouw", meta:"Utrecht · 40u · Vast" },
+  { title:"Buitendienstmedewerker Netbeheer", meta:"Haarlem · 36u · Detachering" },
+  { title:"Accountmanager Technische Dienst", meta:"Maarssen · 40u · Vast" }
+];
+
+// ===========================================================
+// STATE MACHINE — één doorlopend profiel over 16 stappen
+// ===========================================================
+const TOTAL_STEPS = questionsA.length + Object.values(DRAW_PLAN).reduce((a,b)=>a+b,0); // 6 + 10 = 16
+
+const state = { started:false, stage:'partA', stepA:0, showingInsightA:false, answersA:{}, cardsB:[], stepB:0, answersB:[] };
+const stage = document.getElementById('stage');
+const routeFill = document.getElementById('routeFill');
+const checkpoint = document.getElementById('checkpoint');
+const promptEyebrow = document.getElementById('promptEyebrow');
+
+checkpoint.style.left = (questionsA.length / TOTAL_STEPS * 100) + '%';
+
+function currentIndex(){
+  if(state.stage === 'partA') return state.stepA;
+  if(state.stage === 'unlockA') return questionsA.length;
+  if(state.stage === 'partB') return questionsA.length + state.stepB;
+  return TOTAL_STEPS;
+}
+function updateProgress(){
+  const pct = Math.min(currentIndex()/TOTAL_STEPS*100, 100);
+  routeFill.style.width = pct + '%';
+}
+
+function render(){
+  if(!state.started){ promptEyebrow.style.display='none'; renderStart(); return; }
+  updateProgress();
+  if(state.stage === 'partA'){ renderPartA(); return; }
+  if(state.stage === 'unlockA'){ promptEyebrow.style.display='none'; renderUnlockA(); return; }
+  if(state.stage === 'partB'){ renderPartB(); return; }
+  renderFinal();
+}
+
+function renderStart(){
+  routeFill.style.width = '0%';
+  stage.innerHTML = `
+    <div class="card start-card">
+      <div class="eyebrow">Ask Kaya</div>
+      <h2 class="question">Benieuwd naar welke functies bij je passen? Beantwoord enkele vragen — zo'n 5 minuten — en je krijgt eerst een eerste blik op passende vacatures, en aan het eind ben je klaar voor een gesprek met een recruiter.</h2>
+      <div class="card-footer"><button class="btn btn-primary" onclick="startFlow()">Start →</button></div>
+    </div>
+  `;
+}
+function startFlow(){ state.started = true; state.stage = 'partA'; state.stepA = 0; render(); }
+
+function goBackA(){
+  if(state.stepA === 0){ state.started = false; render(); return; }
+  state.stepA -= 1; state.showingInsightA = false; render();
+}
+
+function renderPartA(){
+  promptEyebrow.style.display = 'block';
+  promptEyebrow.textContent = `Vraag ${state.stepA+1} van ${TOTAL_STEPS}`;
+  const q = questionsA[state.stepA];
+  if(state.showingInsightA){ renderInsightA(q); return; }
+
+  let optsHtml = '';
+  const prevAns = state.answersA[q.key];
+  if(q.type === 'choice'){
+    optsHtml = `<div class="choice-row">` + q.options.map(o=>
+      `<button class="choice${prevAns===o.id?' selected':''}" onclick="selectOptionA('${o.id}')">${o.label}<span class="sub">${o.sub}</span></button>`).join('') + `</div>`;
+  } else if(q.type === 'grid'){
+    optsHtml = `<div class="choice-grid">` + q.options.map(o=>
+      `<button class="choice grid${prevAns===o.id?' selected':''}" onclick="selectOptionA('${o.id}')">${o.label}</button>`).join('') + `</div>`;
+  } else if(q.type === 'text'){
+    const prefill = (prevAns && prevAns !== q.skipOption?.id) ? prevAns : '';
+    optsHtml = `<textarea class="text-input" id="textAnswer" placeholder="${q.placeholder}">${prefill}</textarea>
+      <div class="card-footer" style="justify-content:space-between;">
+        ${q.skipOption ? `<button class="btn btn-ghost" onclick="selectOptionA('${q.skipOption.id}')">${q.skipOption.label}</button>` : `<span></span>`}
+        <button class="btn btn-primary" onclick="submitTextA()">Verder</button>
+      </div>`;
+  } else if(q.type === 'sliders'){
+    optsHtml = `<div class="sliders">` + q.options.map(o=>{
+      const v = (prevAns && prevAns[o.id]!==undefined) ? prevAns[o.id] : 50;
+      return `<div class="slider-row">
+        <div class="slider-top"><div class="slider-label">${o.label}</div><div class="slider-tier" id="tier-${o.id}">${tierLabel(v)}</div></div>
+        <input type="range" min="0" max="100" value="${v}" class="slider" id="slider-${o.id}" oninput="updateSliderTier('${o.id}')">
+      </div>`;
+    }).join('') + `</div><div class="card-footer"><button class="btn btn-primary" onclick="submitSlidersA()">Verder</button></div>`;
+  } else if(q.type === 'practical'){
+    const pa = prevAns || {};
+    optsHtml = `
+      <div class="field-block"><div class="field-row">
+        <span>Ik wil werken circa</span>
+        <input type="number" min="0" class="inline-input small" id="field-km" placeholder="20" value="${pa.km||''}">
+        <span>km vanaf</span>
+        <input type="text" class="inline-input" id="field-plaats" placeholder="bijv. Utrecht" value="${pa.plaats||''}">
+      </div></div>
+      <div class="field-block"><label class="field-label">Mijn gewenste salaris</label>
+        <input type="text" class="text-input-line" id="field-salaris" placeholder="bijv. €3.200 per maand" value="${pa.salaris||''}"></div>
+      <div class="field-block"><label class="field-label">Ik wil niet werken als… <span class="optional-tag">niet verplicht</span></label>
+        <input type="text" class="text-input-line" id="field-exclusie" placeholder="bijv. callcentermedewerker" value="${pa.exclusie||''}"></div>
+      <div class="card-footer"><button class="btn btn-primary" onclick="submitPracticalA()">Deel 1 afronden →</button></div>`;
+  }
+
+  stage.innerHTML = `<div class="card">
+    <button class="back-link" onclick="goBackA()">← Vorige vraag</button>
+    <h2 class="question">${q.question}</h2>
+    ${optsHtml}
+  </div>`;
+}
+
+function selectOptionA(id){ const q=questionsA[state.stepA]; state.answersA[q.key]=id; state.showingInsightA=true; render(); }
+function tierLabel(v){ if(v<25) return "Nauwelijks"; if(v<50) return "Een beetje"; if(v<75) return "Belangrijk"; return "Heel belangrijk"; }
+function updateSliderTier(id){ const v=parseInt(document.getElementById('slider-'+id).value,10); document.getElementById('tier-'+id).textContent=tierLabel(v); }
+function submitSlidersA(){
+  const q=questionsA[state.stepA]; const vals={};
+  q.options.forEach(o=>{ vals[o.id]=parseInt(document.getElementById('slider-'+o.id).value,10); });
+  state.answersA[q.key]=vals; state.showingInsightA=true; render();
+}
+function submitPracticalA(){
+  const q=questionsA[state.stepA];
+  state.answersA[q.key] = {
+    km: document.getElementById('field-km').value.trim(),
+    plaats: document.getElementById('field-plaats').value.trim(),
+    salaris: document.getElementById('field-salaris').value.trim(),
+    exclusie: document.getElementById('field-exclusie').value.trim()
+  };
+  state.showingInsightA=true; render();
+}
+function submitTextA(){
+  const val=document.getElementById('textAnswer').value.trim();
+  const q=questionsA[state.stepA];
+  state.answersA[q.key]=val||'—'; state.showingInsightA=true; render();
+}
+
+function renderInsightA(q){
+  const ans = state.answersA[q.key];
+  const text = getInsightTextA(q, ans);
+  stage.innerHTML = `<div class="insight">
+    <div class="insight-label">Kayak denkt mee</div>
+    <p class="insight-text">"${text}"</p>
+    <div class="card-footer" style="justify-content:flex-start;padding-top:0;">
+      <button class="btn btn-primary" onclick="advanceA()">Volgende →</button>
+    </div>
+  </div>`;
+}
+function getInsightTextA(q, ans){
+  if(q.type === 'practical') return q.insight.default || "Genoteerd.";
+  if(ans && typeof ans === 'object'){
+    const sorted = Object.entries(ans).sort((a,b)=>b[1]-a[1]);
+    const flat = (sorted[0][1] - sorted[sorted.length-1][1]) <= 15;
+    if(flat) return q.insight.balanced || "Genoteerd.";
+    return q.insight[sorted[0][0]] || q.insight.default || "Genoteerd.";
+  }
+  return q.insight[ans] || q.insight.default || "Genoteerd.";
+}
+function advanceA(){
+  if(state.stepA === questionsA.length - 1){
+    state.stage = 'unlockA'; state.showingInsightA = false; render(); return;
+  }
+  state.stepA += 1; state.showingInsightA = false; render();
+}
+
+function profileTagsA(){
+  const a = state.answersA;
+  const map = {
+    idealistisch:"Missiegedreven", commercieel:"Resultaatgericht",
+    klein:"Teamspeler", groot:"Groeigericht",
+    zorg:"Zorg & welzijn", energie:"Energie & duurzaamheid", techniek:"Techniek", financieel:"Finance & zakelijk", bouw:"Bouw & infra", overig:"Open profiel",
+    autonomie:"Zelfstandig", meesterschap:"Vakgericht", verbondenheid:"Teamgericht", impact:"Ambitieus"
+  };
+  const tags = [];
+  Object.entries(a).forEach(([key,v])=>{
+    if(key === 'praktisch') return;
+    if(v && typeof v === 'object'){
+      Object.entries(v).sort((x,y)=>y[1]-x[1]).slice(0,2).forEach(([k,val])=>{ if(val>=55 && map[k]) tags.push(map[k]); });
+    } else if(map[v]){ tags.push(map[v]); }
+  });
+  return tags.slice(0,5);
+}
+
+function renderUnlockA(){
+  const tags = profileTagsA();
+  const count = 190000 - Math.floor(Math.random()*4000) - 185500;
+  stage.innerHTML = `
+    <div class="unlock-card">
+      <div class="unlock-label">Deel 1 compleet</div>
+      <p class="unlock-title">Vacatures ontgrendeld</p>
+      <div class="tags">${tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+      <div class="match-count" id="matchCount">0</div>
+      <div class="match-sub">van de 190.000 vacatures passen mogelijk bij jou</div>
+      <div class="final-actions">
+        <button class="btn btn-cta" onclick="startPartB()">Nog 10 korte vragen voor een afspraak met een recruiter →</button>
+        <button class="btn btn-secondary" onclick="revealJobsA()">Bekijk vacatures nu</button>
+      </div>
+      <div class="preview-jobs" id="previewJobsA"></div>
+    </div>
+  `;
+  animateCount(Math.max(count,140));
+}
+function animateCount(target){
+  const el = document.getElementById('matchCount');
+  let cur=0; const step=Math.max(1,Math.floor(target/40));
+  const t=setInterval(()=>{ cur+=step; if(cur>=target){cur=target;clearInterval(t);} el.textContent=cur.toLocaleString('nl-NL'); },25);
+}
+function revealJobsA(){
+  const box = document.getElementById('previewJobsA');
+  box.innerHTML = jobPool.slice(0,3).map(j=>`<div class="job-card"><div class="job-title">${j.title}</div><div class="job-meta">${j.meta}</div></div>`).join('');
+  box.classList.add('active');
+}
+
+function startPartB(){ state.cardsB = drawSession(); state.stepB=0; state.answersB=[]; state.stage='partB'; render(); }
+
+function renderPartB(){
+  promptEyebrow.style.display = 'block';
+  promptEyebrow.textContent = `Vraag ${questionsA.length + state.stepB + 1} van ${TOTAL_STEPS}`;
+  const c = state.cardsB[state.stepB];
+  stage.innerHTML = `
+    <div class="vs-card" id="vsCard">
+      <div class="vs-half left" onclick="pickB('${escapeQ(c.left)}')"><div class="vs-label">${c.left}</div></div>
+      <div class="vs-half right" onclick="pickB('${escapeQ(c.right)}')"><div class="vs-label">${c.right}</div></div>
+      <div class="vs-badge">of</div>
+      <div class="cat-chip">${labelForCat(c.cat)}</div>
+    </div>
+  `;
+}
+function pickB(value){
+  const c = state.cardsB[state.stepB];
+  state.answersB.push({ cat:c.cat, value });
+  document.getElementById('vsCard').classList.add('flash');
+  setTimeout(()=>{
+    state.stepB += 1;
+    if(state.stepB >= state.cardsB.length){ state.stage = 'final'; }
+    render();
+  }, 180);
+}
+
+function renderFinal(){
+  promptEyebrow.style.display = 'none';
+  const profile = buildProfileB(state.answersB);
+  const tagsA = profileTagsA();
+  stage.innerHTML = `
+    <div class="final-card">
+      <div class="final-eyebrow">Compleet — klaar voor een gesprek met een recruiter</div>
+      <p class="final-headline">"${profile.headline}"</p>
+      <p class="final-body">${profile.body}</p>
+
+      <div class="group-label">Uit deel 1 — je matchingprofiel</div>
+      <div class="tags left">${tagsA.map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+
+      <div class="group-label">Uit deel 2 — je flitsprofiel</div>
+      <div class="tags left">${state.answersB.map(a=>`<span class="tag">${a.value}</span>`).join('')}</div>
+
+      <div class="final-actions" style="margin-top:22px;">
+        <button class="btn btn-cta" onclick="alert('Demo — dit opent in productie de agenda van de best passende recruiter.')">Plan een gesprek met een recruiter</button>
+      </div>
+      <a class="why-link" href="kayak-waarom-dit-werkt.html" target="_blank" rel="noopener">Waarom dit werkt — de psychologie erachter →</a>
+      <div class="disclaimer">Deel 2 is gebaseerd op ${state.answersB.length} losse keuzes van vandaag — leuk om over na te denken, maar niet wetenschappelijk onderbouwd. Verbind hier vooral geen conclusies aan.</div>
+    </div>
+  `;
+}
+
+render();
+</script>
+</body>
+</html>
