@@ -441,18 +441,19 @@ runChatOnce();
 // Vragenlijst in een los, gecentreerd pop-upvenster openen
 // ---------------------------------------------------------
 function openQuestionnaire(e){
+  e.preventDefault();
   const url = e.currentTarget.getAttribute('href');
   const w = 480, h = 800;
   const left = Math.max(0, (screen.width - w) / 2);
   const top = Math.max(0, (screen.height - h) / 2);
-  const popup = window.open(url, 'askkaya-vragenlijst', `width=${w},height=${h},left=${left},top=${top},resizable=yes,scrollbars=yes,noopener`);
+  const popup = window.open(url, 'askkaya-vragenlijst', `width=${w},height=${h},left=${left},top=${top},resizable=yes,scrollbars=yes`);
   if(popup){
-    e.preventDefault();
     popup.focus();
-    return false;
+  } else {
+    // Pop-up geblokkeerd: alsnog openen, in hetzelfde tabblad
+    window.location.href = url;
   }
-  // Pop-up geblokkeerd: laat de browser gewoon de normale link volgen
-  return true;
+  return false;
 }
 </script>
 </body>
