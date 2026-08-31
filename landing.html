@@ -249,17 +249,17 @@
 </section>
 
 <div class="paths">
-  <a class="path-card a" href="ask-kaya.html">
+  <a class="path-card a" href="ask-kaya.html" onclick="return openQuestionnaire(event)">
     <div class="path-title">Praat met een recruiter</div>
     <p class="path-sub">Persoonlijke aandacht en verdieping. Rond de volledige vragenlijst af, dan plan je meteen een moment in.</p>
     <span class="path-arrow">Start →</span>
   </a>
-  <a class="path-card b" href="ask-kaya.html">
+  <a class="path-card b" href="ask-kaya.html" onclick="return openQuestionnaire(event)">
     <div class="path-title">Verken je carrière</div>
     <p class="path-sub">Nog niet zeker wat je zoekt? Een paar korte vragen geven al een eerste richting.</p>
     <span class="path-arrow">Start →</span>
   </a>
-  <a class="path-card c" href="ask-kaya.html">
+  <a class="path-card c" href="ask-kaya.html" onclick="return openQuestionnaire(event)">
     <div class="path-title">Vind een baan</div>
     <p class="path-sub">Weet je al ongeveer wat je zoekt? Beantwoord een paar vragen voor een gerichte match.</p>
     <span class="path-arrow">Start →</span>
@@ -272,7 +272,7 @@
       <div class="section-eyebrow">Actueel aanbod</div>
       <h2 class="section-title">Recente vacatures</h2>
     </div>
-    <a class="btn-profile" href="ask-kaya.html">Zoek met mijn profiel →</a>
+    <a class="btn-profile" href="ask-kaya.html" onclick="return openQuestionnaire(event)">Zoek met mijn profiel →</a>
   </div>
   <div class="section-note-row">
     <div class="section-note">Toont <span id="visibleCount">0</span> van de <span id="totalCount">0</span> weergegeven</div>
@@ -436,6 +436,24 @@ async function runChatOnce(){
   addBubble('kaya', CHAT_SEQUENCE[1].text);
 }
 runChatOnce();
+
+// ---------------------------------------------------------
+// Vragenlijst in een los, gecentreerd pop-upvenster openen
+// ---------------------------------------------------------
+function openQuestionnaire(e){
+  const url = e.currentTarget.getAttribute('href');
+  const w = 480, h = 800;
+  const left = Math.max(0, (screen.width - w) / 2);
+  const top = Math.max(0, (screen.height - h) / 2);
+  const popup = window.open(url, 'askkaya-vragenlijst', `width=${w},height=${h},left=${left},top=${top},resizable=yes,scrollbars=yes,noopener`);
+  if(popup){
+    e.preventDefault();
+    popup.focus();
+    return false;
+  }
+  // Pop-up geblokkeerd: laat de browser gewoon de normale link volgen
+  return true;
+}
 </script>
 </body>
 </html>
